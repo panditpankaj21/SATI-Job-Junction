@@ -1,0 +1,75 @@
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+import CompanyLogos from "../components/CompanyLogos";
+import InterviewExperienceForm from "../components/InterviewExperienceForm";
+import AllInterviewExperiences from "../components/AllInterviewExperiences";
+import Sidebar from "../components/Sidebar";
+import OtpVerificationModal from "../components/OtpVerificationModal";
+import { useState } from "react";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+export default function Home() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isFormModalOpen, setIsFormModalOpen] = useState(false);
+  const [isOtpModalOpen, setIsOtpModalOpen] = useState(false);
+  const [userEmail, setUserEmail] = useState("");
+
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+  };
+
+  const handleAddExperience = () => {
+    setIsFormModalOpen(true);
+  };
+
+  const handleVerifyRequest = (email) => {
+    setUserEmail(email);
+    setIsOtpModalOpen(true);
+  };
+
+  const closeFormModal = () => {
+    setIsFormModalOpen(false);
+  };
+
+  const closeOtpModal = () => {
+    setIsOtpModalOpen(false);
+  };
+
+  return (
+    <div className="flex min-h-screen bg-gray-800">
+      <div className="flex-1 flex flex-col">
+        <Navbar />
+        <CompanyLogos />
+        <div className="flex bg-gray-800 text-white">
+          <Sidebar
+            onSearch={handleSearch}
+            onAddExperience={handleAddExperience}
+            onVerifyRequest={handleVerifyRequest}
+          />
+          <AllInterviewExperiences searchQuery={searchQuery} />
+        </div>
+        <Footer />
+      </div>
+
+      {/* Interview Experience Form Modal */}
+      {isFormModalOpen && (
+        <div className="fixed inset-0 bg-black/70 flex justify-center items-center p-4 z-50">
+          <div className="bg-gray-800 rounded-lg p-6 max-w-3xl w-full max-h-[80vh] overflow-y-auto styled-scrollbar">
+            <InterviewExperienceForm onClose={closeFormModal} />
+          </div>
+        </div>
+      )}
+
+      {/* OTP Verification Modal */}
+      {isOtpModalOpen && (
+        <OtpVerificationModal 
+          email={userEmail} 
+          onClose={closeOtpModal} 
+        />
+      )}
+
+      <ToastContainer position="bottom-right" />
+    </div>
+  );
+}
