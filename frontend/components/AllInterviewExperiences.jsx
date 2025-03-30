@@ -4,9 +4,11 @@ import axios from 'axios';
 import { FaTags } from "react-icons/fa";
 import { MdDeleteOutline, MdOutlineEdit } from "react-icons/md";
 import { RiDeleteBin6Line } from "react-icons/ri";
+import { useNavigate } from "react-router-dom";
 
 
 const AllInterviewExperiences = ({searchQuery}) => {
+  const navigate = useNavigate();
   const [experience, setExperience] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -179,7 +181,7 @@ const AllInterviewExperiences = ({searchQuery}) => {
                 <div>
                   <h3
                     className="text-xl font-bold cursor-pointer text-purple-400 mb-1"
-                    onClick={() => console.log(`Selected: ${exp.title}`)}
+                    onClick={() => navigate(`/post/${exp._id  }`)}
                   >
                     {exp.title}
                   </h3>
