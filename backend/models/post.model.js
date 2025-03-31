@@ -15,10 +15,6 @@ const postSchema = new mongoose.Schema({
         required: true,
     },
     user:{
-        // name,
-        // email,
-        // password,
-        // isVerified
         type: mongoose.Schema.Types.ObjectId,
         ref: User
     }

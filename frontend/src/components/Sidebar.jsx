@@ -50,18 +50,13 @@ const Sidebar = ({ onSearch, onAddExperience, onVerifyRequest }) => {
           className="w-20 h-20 rounded-full mb-4"
         />
         <h3 className="text-lg font-bold">{user.name}</h3>
-        <p className="text-gray-400 flex items-center gap-1">{user.email} <MdVerifiedUser className="text-green-300"/></p>
-        <button 
-          className={`border px-3 py-1 cursor-pointer rounded mt-1 ${
-            user.verified 
-              ? "bg-green-900/40 border-green-500" 
-              : "bg-yellow-900/40 border-yellow-500 hover:bg-yellow-900/75"
-          }`}
+        <p className="text-gray-400 flex items-center gap-1">{user.email} {user.isVerified && <MdVerifiedUser className="text-green-300"/>}</p>
+        {!user.isVerified && <button 
+          className={`border px-3 py-1 cursor-pointer rounded mt-1 bg-yellow-900/40 border-yellow-500 hover:bg-yellow-900/75`}
           onClick={() => onVerifyRequest(user.email)}
-          disabled={user.verified}
         >
-          {user.verified ? "Verified" : "Verify"}
-        </button>
+          Verify
+        </button>}
       </div>
 
       {/* Search Bar */}
