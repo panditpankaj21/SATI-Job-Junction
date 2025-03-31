@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { MdVerified } from "react-icons/md";
+import CommentSection from "./CommentSection";
 
 const InterviewExperienceDetail = () => {
   const { id } = useParams();
@@ -129,6 +130,9 @@ const InterviewExperienceDetail = () => {
             dangerouslySetInnerHTML={{ __html: experience.content }}
           />
         </div>
+        <CommentSection
+          postId={id}
+        />
       </div>
     </div>
   );
