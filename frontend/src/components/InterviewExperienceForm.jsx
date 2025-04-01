@@ -1,26 +1,54 @@
 import React, { useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css"; // Import Quill styles
+import axios from "axios";
+import { FaSpinner } from "react-icons/fa";
 
-const InterviewExperienceForm = ({ onClose }) => {
-  const [title, setTitle] = useState("");
-  const [companyName, setCompanyName] = useState("");
-  const [author, setAuthor] = useState("");
-  const [experience, setExperience] = useState("");
+const InterviewExperienceForm = ({ 
+  onClose,
+  oldTitle = '',
+  oldCompanyName = '',
+  oldExperience = '',
+  isUpdate = false,
+  id = '',
+}) => {
+  const [title, setTitle] = useState(oldTitle);
+  const [companyName, setCompanyName] = useState(oldCompanyName);
+  const [experience, setExperience] = useState(oldExperience);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const newExperience = {
-      id: Date.now(), // Use a unique ID
       title,
       companyName,
-      author,
-      experience,
-      updateDate: new Date().toISOString().split("T")[0], // YYYY-MM-DD format
+      content: experience,
     };
-    // Save the experience (you can replace this with an API call or state update)
-    console.log("New Experience:", newExperience);
-    onClose(); // Close the modal after submission
+    try{
+      setIsLoading(true)
+      if(isUpdate){
+        await axios.post(`${import.meta.env.VITE_BACKEND_URI}/api/v1/posts/update/${id}`, newExperience, {
+          headers:{
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }
+        })
+      } else {
+        await axios.post(`${import.meta.env.VITE_BACKEND_URI}/api/v1/posts/add`, newExperience, {
+          headers:{
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }
+        })
+      }
+
+      setCompanyName('');
+      setExperience('');
+      setTitle('');
+      onClose();
+    } catch (error) {
+      console.log('Error while posting the post: ', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -56,20 +84,38 @@ const InterviewExperienceForm = ({ onClose }) => {
         {/* Experience Input (React Quill Editor) */}
         <div className="text-white">
           <label className="block text-white mb-2">Interview Experience</label>
-          <ReactQuill
-            value={experience}
-            onChange={setExperience}
-            theme="snow"
-            placeholder="Write your experience..."
-            className="text-white rounded bg-gray-700"
-          />
+          <div className="">
+            <ReactQuill
+              value={experience}
+              onChange={setExperience}
+              theme="snow"
+              placeholder="Write your experience..."
+              className=""
+            />
+          </div>
         </div>
 
         <button
-          type="submit"
-          className="w-full bg-purple-600 text-white py-2 px-4 rounded hover:bg-purple-700 transition duration-300"
+          onClick={onClose}
+          className="flex-1 py-2 px-4 rounded mr-3 bg-gray-700 text-white hover:bg-gray-600 transition-colors"
         >
-          Submit Experience
+          Cancel
+        </button>
+
+        <button
+          type="submit"
+          className="bg-purple-600 text-white py-2 px-5 rounded hover:bg-purple-700 transition duration-300"
+        >
+          {isLoading ? (
+            <>
+              <FaSpinner className="animate-spin mr-2" />
+              {isUpdate ? "Updating..." : "Submitting..."}
+            </>
+          ) : (
+            <>
+              {isUpdate ? 'Update' : 'Submit'}
+            </>
+          )}
         </button>
       </form>
         <button

@@ -5,15 +5,20 @@ import { FaTags } from "react-icons/fa";
 import { MdDeleteOutline, MdOutlineEdit } from "react-icons/md";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
+import InterviewExperienceForm from "./InterviewExperienceForm";
 
-
-const AllInterviewExperiences = ({searchQuery}) => {
+const AllInterviewExperiences = ({
+  searchQuery,
+  updateExperience
+}) => {
   const navigate = useNavigate();
   const [experience, setExperience] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [currentUser, setCurrentUser] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [postToDelete, setPostToDelete] = useState(null);
 
   useEffect(()=>{
     setLoading(true)
@@ -29,13 +34,11 @@ const AllInterviewExperiences = ({searchQuery}) => {
           Authorization: `Bearer ${localStorage.getItem('token')}`
         }
       })
-      console.log(res.data.user)
       setCurrentUser(res.data.user);
     } catch (error){
       console.error('Error fetching current user: ', error);
     }
   }
-
 
   const fetchData =  async (page) => {
     try{
@@ -44,8 +47,6 @@ const AllInterviewExperiences = ({searchQuery}) => {
           Authorization: `Bearer ${localStorage.getItem("token")}`
         }
       })
-
-      console.log(res.data);
       setExperience(res.data.posts);
       setTotalPages(res.data.totalPages);
     } catch (error){
@@ -53,25 +54,34 @@ const AllInterviewExperiences = ({searchQuery}) => {
     }
   }
 
-  const handleDelete = async (postId) => {
-    if(window.alert('Are you sure you want to delete this post?')){
-      try{
-        await axios.delete(`${import.meta.env.VITE_BACKEND_URI}/api/v1/posts/${postId}`, {
-          headers:{
-            Authorization: `Bearer ${localStorage.getItem('token')}`
-          }
-        })
+  const handleDeleteClick = (postId) => {
+    setPostToDelete(postId);
+    setShowDeleteModal(true);
+  };
 
-        fetchData(currentPage);
-      }
-      catch (error){
-        console.log('Error while deleting the post: ', error)
-      }
+  const handleDeleteConfirm = async () => {
+    try {
+      await axios.delete(`${import.meta.env.VITE_BACKEND_URI}/api/v1/posts/${postToDelete}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      fetchData(currentPage);
+    } catch (error) {
+      console.log('Error while deleting the post: ', error);
+    } finally {
+      setShowDeleteModal(false);
+      setPostToDelete(null);
     }
-  }
+  };
 
-  const handleEdit = async () => {
-    
+  const handleDeleteCancel = () => {
+    setShowDeleteModal(false);
+    setPostToDelete(null);
+  };
+
+  const handleEdit = async (exp) => {
+    updateExperience(exp._id, exp.title, exp.content, exp.companyName);
   }
 
   const handleNextPage = () => {
@@ -103,7 +113,6 @@ const AllInterviewExperiences = ({searchQuery}) => {
   const truncateText = (text, maxLength) => {
     return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
   };
-
 
   if(loading){
     return (
@@ -141,6 +150,37 @@ const AllInterviewExperiences = ({searchQuery}) => {
 
   return (
     <div className="w-[70%] mx-auto mb-5">
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+          <div className="bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md border border-purple-500">
+            <div className="flex flex-col items-center">
+              <RiDeleteBin6Line className="text-red-500 text-5xl mb-4" />
+              <h3 className="text-xl font-bold text-white mb-2">Delete Experience</h3>
+              <p className="text-gray-300 text-center mb-6">
+                Are you sure you want to delete this interview experience? This action cannot be undone.
+              </p>
+              
+              <div className="flex gap-4 w-full">
+                <button
+                  onClick={handleDeleteCancel}
+                  className="flex-1 py-2 px-4 rounded-lg bg-gray-700 text-white hover:bg-gray-600 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleDeleteConfirm}
+                  className="flex-1 py-2 px-4 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors flex items-center justify-center gap-2"
+                >
+                  <RiDeleteBin6Line />
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <h2 className="text-2xl font-bold text-white mb-6">Interview Experiences</h2>
 
       <div className="space-y-4">
@@ -154,8 +194,14 @@ const AllInterviewExperiences = ({searchQuery}) => {
                 <div className="flex">
                   {currentUser?._id === exp.user._id && 
                   (<div className="flex text-xl gap-1">
-                    <MdOutlineEdit className="text-blue-200 hover:text-blue-300 cursor-pointer"/>
-                    <RiDeleteBin6Line className="text-red-500 hover:text-red-600 cursor-pointer"/>
+                    <MdOutlineEdit 
+                      className="text-blue-200 hover:text-blue-300 cursor-pointer"
+                      onClick={() => handleEdit(exp)}
+                    />
+                    <RiDeleteBin6Line 
+                      onClick={() => handleDeleteClick(exp._id)} 
+                      className="text-red-500 hover:text-red-600 cursor-pointer"
+                    />
                   </div>)}
                 </div>
                 <div>
@@ -166,7 +212,6 @@ const AllInterviewExperiences = ({searchQuery}) => {
                   )}
                 </div>
               </div>
-
 
               {isNewExperience(exp.updatedAt) && (
                 <div className="absolute top-0 left-0 bg-green-700 rounded-r text-white px-2 py-1 text-xs font-extralight">
@@ -181,7 +226,7 @@ const AllInterviewExperiences = ({searchQuery}) => {
                 <div>
                   <h3
                     className="text-xl font-bold cursor-pointer text-purple-400 mb-1"
-                    onClick={() => navigate(`/post/${exp._id  }`)}
+                    onClick={() => navigate(`/post/${exp._id}`)}
                   >
                     {exp.title}
                   </h3>
@@ -202,7 +247,6 @@ const AllInterviewExperiences = ({searchQuery}) => {
         })}
       </div>
 
-
       {/* Pagination controls */}
       <div className="flex justify-center mt-6">
         <button
@@ -221,10 +265,8 @@ const AllInterviewExperiences = ({searchQuery}) => {
           Next
         </button>
       </div>
-
     </div>
   );
 };
-
 
 export default AllInterviewExperiences;

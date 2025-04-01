@@ -2,11 +2,16 @@ import React, { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import { MdVerifiedUser } from "react-icons/md";
 import axios from "axios";
+import Avatar from "./Avatar";
 
 const Sidebar = ({ onSearch, onAddExperience, onVerifyRequest }) => {
   const [user, setUser] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [recentSearches, setRecentSearches] = useState(["Google", "Amazon", "Microsoft"]);
+
+  const handleAvatarChange = (updatedUser) => {
+    setUser(updatedUser);
+  };
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -44,11 +49,7 @@ const Sidebar = ({ onSearch, onAddExperience, onVerifyRequest }) => {
     <div className="w-64 m-2 text-white">
       {/* User Profile */}
       <div className="flex flex-col items-center mb-2 bg-gray-900 p-5 rounded-xl">
-        <img
-          src={user.avatar || "/img/user.png"}
-          alt="User"
-          className="w-20 h-20 rounded-full mb-4"
-        />
+        <Avatar user={user} className="w-16 h-16 text-4xl" onAvatarChange={handleAvatarChange}/>
         <h3 className="text-lg font-bold">{user.name}</h3>
         <p className="text-gray-400 flex items-center gap-1">{user.email} {user.isVerified && <MdVerifiedUser className="text-green-300"/>}</p>
         {!user.isVerified && <button 
