@@ -15,11 +15,6 @@ const Footer = () => {
                 </a>
               </li>
               <li>
-                <a href="/posts" className="hover:text-purple-400 transition duration-300">
-                  Posts
-                </a>
-              </li>
-              <li>
                 <a href="/login" className="hover:text-purple-400 transition duration-300">
                   Login
                 </a>
@@ -54,7 +49,7 @@ const Footer = () => {
 
           {/* Copyright */}
           <div>
-            <h3 className="text-lg font-bold text-purple-400 mb-4">CollegeExp</h3>
+            <h3 className="text-lg font-bold text-purple-400 mb-4">SATI Job Junction</h3>
             <p className="text-sm">
               &copy; {new Date().getFullYear()} SATI. All rights reserved.
             </p>
