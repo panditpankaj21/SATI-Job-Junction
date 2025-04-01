@@ -34,6 +34,11 @@ ACCESS_TOKEN_SECRET=<your_secret_key>
 ACCESS_TOKEN_EXPIRY=<your_expiry_duration>
 EMAIL_USER=<your_email>
 EMAIL_PASS=<your_email_password>
+
+# cloudinay
+CLOUDINARY_CLOUD_NAME=<your_cloud_name>
+CLOUDINARY_API_KEY=<your_api_key>
+CLOUDINARY_API_SECRET=<your_secret_key>
 ```
 
 #### **Install Dependencies & Run the Server**
