@@ -9,6 +9,7 @@ import {
 } from 'react-icons/md';
 import { FaUserCircle } from 'react-icons/fa';
 import { timeAgo } from '../utils/timeAgo';
+import Avatar from './Avatar';
 
 const CommentSection = ({ postId }) => {
   const [currentUser, setCurrentUser] = useState(null)
@@ -192,17 +193,13 @@ const CommentSection = ({ postId }) => {
         key={comment._id}
         className={`mt-4 ${depth > 0 ? 'ml-8 border-l-2 border-gray-700 pl-4' : ''}`}
       >
-        <div className="flex gap-3">
-          <div className="flex-shrink-0 pt-1">
-            {comment.user.avatar ? (
-              <img
-                src={comment.user.avatar}
-                alt={comment.user.name}
-                className="w-8 h-8 rounded-full object-cover"
-              />
-            ) : (
-              <FaUserCircle className="text-gray-400 text-2xl" />
-            )}
+        <div className="flex gap-2">
+          <div className="relative group">
+            <Avatar 
+              user={comment.user}
+              account={false}
+              className="w-8 h-8 text-sm transition-all"
+            />
           </div>
 
           <div className="flex-1 min-w-0">

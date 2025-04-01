@@ -40,6 +40,53 @@ const InterviewExperienceDetail = () => {
     });
   };
 
+  const renderContent = (html) => {
+    // If content doesn't contain h1 tags, render it directly with styling
+    if (!html.includes('<h1>')) {
+      return (
+        <div 
+          className="text-gray-300 content-container"
+          dangerouslySetInnerHTML={{ __html: html }}
+        />
+      );
+    }
+
+    // Otherwise, split by h1 tags
+    return (
+      <div className="content-container space-y-6">
+        {html.split('<h1>').map((section, index) => {
+          if (index === 0 && !section.includes('</h1>')) {
+            // Handle content before first h1 if any
+            return (
+              <div 
+                key="pre-content"
+                className="text-gray-300"
+                dangerouslySetInnerHTML={{ __html: section }}
+              />
+            );
+          }
+          
+          if (index === 0) return null; // Skip empty first item
+          
+          const [title, ...contentParts] = section.split('</h1>');
+          const content = contentParts.join('</h1>');
+          
+          return (
+            <div key={index} className="section-group">
+              <h2 className="text-2xl font-bold text-purple-300 mb-4 border-b border-purple-600 pb-2">
+                {title}
+              </h2>
+              <div 
+                className="section-content text-gray-300"
+                dangerouslySetInnerHTML={{ __html: content }}
+              />
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
   if (loading) {
     return (
       <div className="w-full min-h-screen bg-gray-800 p-6">
@@ -87,7 +134,7 @@ const InterviewExperienceDetail = () => {
           <div className="text-red-400 text-xl mb-4">{error}</div>
           <button 
             onClick={fetchData}
-            className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
+            className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition-colors"
           >
             Retry
           </button>
@@ -124,15 +171,74 @@ const InterviewExperienceDetail = () => {
           </div>
         </div>
         
-        <div className="prose prose-invert max-w-none">
-          <div
-            className="text-gray-300"
-            dangerouslySetInnerHTML={{ __html: experience.content }}
-          />
+        <div className="content-wrapper">
+          {/* Apply global content styles */}
+          <style jsx global>{`
+            .content-container h2 {
+              color: #d8b4fe;
+              font-size: 1.5rem;
+              font-weight: 600;
+              margin-top: 2rem;
+              margin-bottom: 1rem;
+              border-bottom: 1px solid #6b21a8;
+              padding-bottom: 0.5rem;
+            }
+            
+            .content-container p {
+              color: #d1d5db;
+              margin-bottom: 1rem;
+              line-height: 1.6;
+            }
+            
+            .content-container ul, 
+            .content-container ol {
+              margin-left: 1.5rem;
+              margin-bottom: 1.5rem;
+              color: #d1d5db;
+            }
+            
+            .content-container li {
+              margin-bottom: 0.5rem;
+              position: relative;
+              line-height: 1.5;
+            }
+            
+            .content-container ul li::before {
+              content: "•";
+              color: #a78bfa;
+              font-weight: bold;
+              display: inline-block;
+              width: 1em;
+              margin-left: -1em;
+            }
+            
+            .content-container ol {
+              counter-reset: item;
+            }
+            
+            .content-container ol li {
+              counter-increment: item;
+            }
+            
+            .content-container ol li::before {
+              content: counter(item) ".";
+              color: #a78bfa;
+              font-weight: bold;
+              display: inline-block;
+              width: 1.5em;
+              margin-left: -1.5em;
+            }
+            
+            .content-container strong {
+              color: #e9d5ff;
+              font-weight: 600;
+            }
+          `}</style>
+          
+          {renderContent(experience.content)}
         </div>
-        <CommentSection
-          postId={id}
-        />
+        
+        <CommentSection postId={id} />
       </div>
     </div>
   );
