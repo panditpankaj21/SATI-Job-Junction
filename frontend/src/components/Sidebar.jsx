@@ -7,43 +7,73 @@ import Avatar from "./Avatar";
 const Sidebar = ({ onSearch, onAddExperience, onVerifyRequest }) => {
   const [user, setUser] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [recentSearches, setRecentSearches] = useState(["Google", "Amazon", "Microsoft"]);
+  const [recentSearches, setRecentSearches] = useState(localStorage.getItem("recentSearches") || []);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleAvatarChange = (updatedUser) => {
     setUser(updatedUser);
   };
 
-  const handleSearch = (e) => {
+  const handleSearchChange = (e) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+  };
+
+  const handleSearchSubmit = (e) => {
     e.preventDefault();
-    if (searchQuery.trim()) {
-      onSearch(searchQuery);
-      updateRecentSearches(searchQuery);
-    }
+    onSearch(searchQuery);
+    updateRecentSearches(searchQuery);
+    
   };
 
   const updateRecentSearches = (query) => {
-    const updatedSearches = [query, ...recentSearches].slice(0, 3); 
-    setRecentSearches(updatedSearches);
+    if (query.trim() === "") return;
+    
+    setRecentSearches(prev => {
+      const withoutCurrent = prev.filter(item => item !== query);
+      
+      const updated = [query, ...withoutCurrent];
+      
+      const limited = updated.slice(0, 5);
+      localStorage.setItem('recentSearches', JSON.stringify(limited));
+      
+      return limited;
+    });
   };
 
   const handleRecentSearchClick = (query) => {
     setSearchQuery(query); 
     onSearch(query);
+    updateRecentSearches(query);
   };
 
   useEffect(() => {
     async function fetchData() {
-      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URI}/api/v1/users/me`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-      setUser(response.data.user);
+      try {
+        setIsLoading(true);
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URI}/api/v1/users/me`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+        setUser(response.data.user);
+        
+        // Load recent searches from localStorage if available
+        const savedSearches = localStorage.getItem('recentSearches');
+        if (savedSearches) {
+          setRecentSearches(JSON.parse(savedSearches));
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      } finally {
+        setIsLoading(false);
+      }
     }
     fetchData();
   }, []);
 
-  if (!user) return <div>Loading...</div>;
+  if (isLoading) return <div className="w-64 m-2 text-white">Loading user...</div>;
+  if (!user) return <div className="w-64 m-2 text-white">Please log in</div>;
 
   return (
     <div className="w-64 m-2 text-white">
@@ -62,13 +92,13 @@ const Sidebar = ({ onSearch, onAddExperience, onVerifyRequest }) => {
 
       {/* Search Bar */}
       <div className="bg-gray-900 p-5 rounded-xl">
-        <form onSubmit={handleSearch} className="">
+        <form onSubmit={handleSearchSubmit} className="">
           <label>Company Name</label>
           <div className="flex items-center mt-2 relative">
             <input
               type="text"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={handleSearchChange}
               placeholder="Search by company..."
               className="w-full p-2 rounded bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
             />
@@ -92,7 +122,7 @@ const Sidebar = ({ onSearch, onAddExperience, onVerifyRequest }) => {
                   onClick={() => handleRecentSearchClick(query)}
                   className="flex items-center bg-gray-700 text-white px-2 py-1 rounded-full text-sm hover:bg-gray-600 transition duration-300"
                 >
-                  <FaSearch className="mr-1" />
+                  <FaSearch className="mr-1 text-xs" />
                   {query}
                 </button>
               ))}

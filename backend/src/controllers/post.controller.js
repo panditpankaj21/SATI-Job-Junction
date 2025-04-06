@@ -5,11 +5,23 @@ const allPosts = async (req, res) => {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 4;
         const skip = (page - 1) * limit;
+        const searchQuery = req.query.search || '';
 
-        const totalPosts = await Post.countDocuments();
+        // Build the query object
+        const query = {};
+        
+        if (searchQuery) {
+            query.$or = [
+                { companyName: { $regex: searchQuery, $options: 'i' } },
+                { title: { $regex: searchQuery, $options: 'i' } },
+                { content: { $regex: searchQuery, $options: 'i' } }
+            ];
+        }
+
+        const totalPosts = await Post.countDocuments(query);
         const totalPages = Math.ceil(totalPosts / limit);
 
-        const posts = await Post.find()
+        const posts = await Post.find(query)
             .populate('user', '-password')
             .skip(skip)
             .limit(limit)
@@ -22,7 +34,11 @@ const allPosts = async (req, res) => {
             totalPages
         });
     } catch (error) {
-        res.status(500).json({ message: 'Internal Server Error', error: error.message });
+        console.error('Error fetching posts:', error);
+        res.status(500).json({ 
+            message: 'Internal Server Error', 
+            error: error.message 
+        });
     }
 };
 

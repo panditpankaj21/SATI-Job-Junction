@@ -6,8 +6,6 @@ import AllInterviewExperiences from "../components/AllInterviewExperiences";
 import Sidebar from "../components/Sidebar";
 import OtpVerificationModal from "../components/OtpVerificationModal";
 import { useState } from "react";
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -105,7 +103,6 @@ export default function Home() {
         />
       )}
 
-      <ToastContainer position="bottom-right" />
     </div>
   );
 }

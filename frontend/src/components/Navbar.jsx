@@ -1,5 +1,6 @@
 import { FaHome, FaUser, FaSignInAlt, FaSignOutAlt } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { GrNotes } from "react-icons/gr";
 
 const Navbar = () => {
   const navigate = useNavigate()
@@ -32,6 +33,15 @@ const Navbar = () => {
             >
               <FaHome className="mr-2" />
               Home
+            </a>
+          </li>
+          <li>
+            <a
+              href="/"
+              className="flex items-center hover:text-purple-400 transition duration-300"
+            >
+              <GrNotes className="mr-2" />
+              Notes & pyqs
             </a>
           </li>
           <li>

@@ -2,10 +2,9 @@ import React, { useEffect, useState } from "react";
 import { MdVerified } from "react-icons/md";
 import axios from 'axios';
 import { FaTags } from "react-icons/fa";
-import { MdDeleteOutline, MdOutlineEdit } from "react-icons/md";
+import { MdOutlineEdit } from "react-icons/md";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
-import InterviewExperienceForm from "./InterviewExperienceForm";
 
 const AllInterviewExperiences = ({
   searchQuery,
@@ -13,6 +12,7 @@ const AllInterviewExperiences = ({
 }) => {
   const navigate = useNavigate();
   const [experience, setExperience] = useState([]);
+  const [filteredExperience, setFilteredExperience] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -25,7 +25,7 @@ const AllInterviewExperiences = ({
     fetchCurrentUser();
     fetchData(currentPage);
     setLoading(false)
-  }, [currentPage]);
+  }, [currentPage, searchQuery]);
 
   const fetchCurrentUser = async () => {
     try{
@@ -40,19 +40,41 @@ const AllInterviewExperiences = ({
     }
   }
 
-  const fetchData =  async (page) => {
+  const fetchData =  async (page, query = "") => {
     try{
-      const res = await axios.get(`${import.meta.env.VITE_BACKEND_URI}/api/v1/posts?page=${page}&limit=4`, {
+      let url = `${import.meta.env.VITE_BACKEND_URI}/api/v1/posts?page=${page}&limit=4`;
+      if(query) {
+        url += `&search=${query}`;
+      }
+
+      const res = await axios.get(url, {
         headers:{
           Authorization: `Bearer ${localStorage.getItem("token")}`
         }
       })
       setExperience(res.data.posts);
+      setFilteredExperience(res.data.posts);
       setTotalPages(res.data.totalPages);
     } catch (error){
       console.error("Error fetching data: ", error);
+    } finally{
+      setLoading(false);
     }
   }
+
+  useEffect(() => {
+    if (searchQuery) {
+      const filtered = experience.filter(exp => 
+        exp.companyName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        exp.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        exp.content.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setFilteredExperience(filtered);
+    } else {
+      setFilteredExperience(experience);
+    }
+  }, [searchQuery, experience]);
+
 
   const handleDeleteClick = (postId) => {
     setPostToDelete(postId);
@@ -181,11 +203,17 @@ const AllInterviewExperiences = ({
         </div>
       )}
 
-      <h2 className="text-2xl font-bold text-white mb-6">Interview Experiences</h2>
+      <h2 className="text-2xl font-bold text-white mb-6">
+        Interview Experiences
+        {searchQuery && (
+          <span className="text-sm text-gray-400 ml-2">
+            (Search results for "{searchQuery}")
+          </span>
+        )}
+      </h2>
 
       <div className="space-y-4">
-        {experience.map((exp) => {
-          return (
+        {filteredExperience.length > 0 ? (filteredExperience.map((exp) => (
             <div
               key={exp._id}
               className="bg-gradient-to-r from-gray-800 to-gray-700 p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 relative"
@@ -243,8 +271,15 @@ const AllInterviewExperiences = ({
               >
               </div>
             </div>
-          );
-        })}
+          ))
+        ) : (<div className="text-center py-10 text-gray-400">
+          {searchQuery ? (
+            <p>No experiences found for "{searchQuery}"</p>
+          ) : (
+            <p>No experiences available yet</p>
+          )}
+        </div>
+      )}
       </div>
 
       {/* Pagination controls */}

@@ -8,10 +8,8 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* Public Route */}
         <Route path="/login" element={<AuthLayout />} />
         
-        {/* Protected Route */}
         <Route 
           path="/" 
           element={

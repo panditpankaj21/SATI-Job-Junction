@@ -3,6 +3,8 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { MdVerified } from "react-icons/md";
 import CommentSection from "./CommentSection";
+import Navbar from "./Navbar";
+import Footer from "./Footer";
 
 const InterviewExperienceDetail = () => {
   const { id } = useParams();
@@ -145,6 +147,7 @@ const InterviewExperienceDetail = () => {
 
   return (
     <div className="w-full min-h-screen bg-gray-800">
+      <Navbar />
       <div className="max-w-4xl mx-auto p-6 py-10">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-purple-400 mb-2">
@@ -240,6 +243,7 @@ const InterviewExperienceDetail = () => {
         
         <CommentSection postId={id} />
       </div>
+      <Footer/>
     </div>
   );
 };
