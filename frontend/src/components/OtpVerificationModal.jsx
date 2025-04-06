@@ -86,9 +86,13 @@ const OtpVerificationModal = ({ email, onClose }) => {
 
     setIsLoading(true);
     try {
-      await axios.post(`${import.meta.env.VITE_BACKEND_URI}/api/v1/auth/verify-otp`, {
+      await axios.post(`${import.meta.env.VITE_BACKEND_URI}/api/v1/users/verify-otp`, {
         email,
         otp: otpCode
+      } , {
+        headers: {
+          Authorization : `Bearer ${localStorage.getItem("token")}`
+        }
       });
       setMessage("Verification successful!");
       setTimeout(onClose, 2000);
