@@ -37,7 +37,7 @@ const Navbar = () => {
           </li>
           <li>
             <a
-              href="/"
+              href="https://campus-notes.vercel.app/"
               className="flex items-center hover:text-purple-400 transition duration-300"
             >
               <GrNotes className="mr-2" />

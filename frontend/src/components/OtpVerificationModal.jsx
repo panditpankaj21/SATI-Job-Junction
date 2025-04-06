@@ -60,7 +60,11 @@ const OtpVerificationModal = ({ email, onClose }) => {
   const handleSendOtp = async () => {
     setIsLoading(true);
     try {
-    //   await axios.post(`${import.meta.env.VITE_BACKEND_URI}/api/v1/auth/send-otp`, { email });
+      await axios.post(`${import.meta.env.VITE_BACKEND_URI}/api/v1/users/send-otp`, { email }, {
+        headers: {
+          Authorization : `Bearer ${localStorage.getItem("token")}`
+        }
+      });
       setIsOtpSent(true);
       setCountdown(600);
       setMessage("OTP sent successfully!");
