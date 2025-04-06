@@ -53,14 +53,17 @@ export default function Home() {
       <div className="flex-1 flex flex-col">
         <Navbar />
         <CompanyLogos />
-        <div className="flex bg-gray-800 text-white">
-          <Sidebar
-            onSearch={handleSearch}
-            onAddExperience={handleAddExperience}
-            onVerifyRequest={handleVerifyRequest}
-          />
-          <AllInterviewExperiences 
-            searchQuery={searchQuery} 
+        <div className="flex flex-col md:flex-row bg-gray-800 text-white">
+          <div className="flex justify-center md:flex-none">
+
+            <Sidebar
+              onSearch={handleSearch}
+              onAddExperience={handleAddExperience}
+              onVerifyRequest={handleVerifyRequest}
+            />
+          </div>
+          <AllInterviewExperiences
+            searchQuery={searchQuery}
             updateExperience={handleUpdateExperience}
           />
         </div>
@@ -71,8 +74,8 @@ export default function Home() {
       {isFormModalOpen && (
         <div className="fixed inset-0 bg-black/75 flex justify-center items-center p-4 z-50">
           <div className="bg-gray-800 rounded-lg p-6 max-w-3xl w-full max-h-[80vh] overflow-y-auto styled-scrollbar border-2 border-purple-500">
-            <InterviewExperienceForm 
-              onClose={closeFormModal} 
+            <InterviewExperienceForm
+              onClose={closeFormModal}
             />
           </div>
         </div>
@@ -83,13 +86,13 @@ export default function Home() {
       {isUpdateModalOpen && (
         <div className="fixed inset-0 bg-black/75 flex justify-center items-center p-4 z-50">
           <div className="bg-gray-800 rounded-lg p-6 max-w-3xl w-full max-h-[80vh] overflow-y-auto styled-scrollbar border-2 border-purple-500">
-            <InterviewExperienceForm 
-              onClose={closeFormModal} 
+            <InterviewExperienceForm
+              onClose={closeFormModal}
               oldCompanyName={oldCompanyName}
               oldTitle={oldTitle}
               oldExperience={oldExperience}
               isUpdate={true}
-              id = {id}
+              id={id}
             />
           </div>
         </div>
@@ -97,9 +100,9 @@ export default function Home() {
 
       {/* OTP Verification Modal */}
       {isOtpModalOpen && (
-        <OtpVerificationModal 
-          email={userEmail} 
-          onClose={closeOtpModal} 
+        <OtpVerificationModal
+          email={userEmail}
+          onClose={closeOtpModal}
         />
       )}
 
