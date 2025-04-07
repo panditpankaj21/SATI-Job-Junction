@@ -23,7 +23,10 @@ function App() {
           path="/post/:id"
           element={
             <ProtectRoute>
+              <div className="overflow-hidden md:overflow-auto">
+
               <InterviewExperienceDetail/>
+              </div>
             </ProtectRoute>
           }
         />
