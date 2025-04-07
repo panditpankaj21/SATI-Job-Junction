@@ -16,13 +16,13 @@ const CompanyLogos = () => {
 
   return (
     <div className="logos-container bg-gray-800 py-3">
-      <div className="flex space-x-8">
+      <div className="flex md:space-x-8 space-x-5">
         {logos.map((logo, index) => (
           <img
             key={index}
             src={logo}
             alt={`Logo ${index + 1}`}
-            className="w-28 h-10 rounded"
+            className="md:w-28 w-12 h-10 rounded"
           />
         ))}
       </div>

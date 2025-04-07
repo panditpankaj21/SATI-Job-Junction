@@ -76,7 +76,7 @@ const Sidebar = ({ onSearch, onAddExperience, onVerifyRequest }) => {
   if (!user) return <div className="w-64 m-2 text-white">Please log in</div>;
 
   return (
-    <div className="w-64 m-2 text-white">
+    <div className="md:w-64 w-full m-2 text-white">
       {/* User Profile */}
       <div className="flex flex-col items-center mb-2 bg-gray-900 p-5 rounded-xl">
         <Avatar user={user} className="w-16 h-16 text-4xl" onAvatarChange={handleAvatarChange}/>

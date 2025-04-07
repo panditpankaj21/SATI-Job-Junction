@@ -138,7 +138,7 @@ const AllInterviewExperiences = ({
 
   if(loading){
     return (
-      <div className="w-[70%] mx-auto mb-5">
+      <div className="md:w-[70%] w-full mx-auto mb-5">
         <h2 className="text-2xl font-bold text-white mb-6">Interview Experiences</h2>
         
         <div className="space-y-4">
@@ -171,7 +171,7 @@ const AllInterviewExperiences = ({
   }
 
   return (
-    <div className="w-[70%] mx-auto mb-5">
+    <div className="md:w-[70%] w-full p-2 md:p-0 mx-auto mb-5">
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
