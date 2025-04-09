@@ -107,8 +107,6 @@ const Avatar = ({ user, account = true, className = '', onAvatarChange }) => {
     }
   };
 
-  console.log("pankaj", user)
-
   if(!account){
     return(
         <div 

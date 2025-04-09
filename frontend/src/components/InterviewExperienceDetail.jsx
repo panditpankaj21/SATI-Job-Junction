@@ -5,16 +5,51 @@ import { MdVerified } from "react-icons/md";
 import CommentSection from "./CommentSection";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
+import { BiUpvote } from "react-icons/bi";
+import { FaRegComment } from "react-icons/fa";
+import { BiSolidUpvote } from "react-icons/bi";
 
 const InterviewExperienceDetail = () => {
   const { id } = useParams();
   const [experience, setExperience] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
+    fetchCurrentUser();
     fetchData();
   }, []);
+
+  const fetchCurrentUser = async () => {
+    try{
+      const res = await axios.get(`${import.meta.env.VITE_BACKEND_URI}/api/v1/users/me`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      })
+      setCurrentUser(res.data.user);
+    } catch (error){
+      console.error('Error fetching current user: ', error);
+    }
+  }
+
+  const handleUpvote = async (postId) => {
+      try {
+        await axios.post(`${import.meta.env.VITE_BACKEND_URI}/api/v1/posts/${postId}/upvote`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`
+            }
+          },
+        );
+        fetchData();
+        
+      } catch (error) {
+        console.error('Error upvoting post:', error);
+      } 
+    };
 
   const fetchData = async () => {
     try {
@@ -24,6 +59,7 @@ const InterviewExperienceDetail = () => {
           Authorization: `Bearer ${localStorage.getItem('token')}`
         }
       });
+      console.log(res.data)
       setExperience(res.data);
     } catch (error) {
       console.error('Error fetching experience: ', error);
@@ -148,7 +184,7 @@ const InterviewExperienceDetail = () => {
   return (
     <div className="w-full min-h-screen bg-gray-800">
       <Navbar />
-      <div className="max-w-4xl mx-auto p-6 py-10">
+      <div className="max-w-4xl mx-auto p-6">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-purple-400 mb-2">
             {experience.title}
@@ -239,6 +275,26 @@ const InterviewExperienceDetail = () => {
           `}</style>
           
           {renderContent(experience.content)}
+        </div>
+
+        <div className="mt-5 flex items-center gap-[1px] text-white">
+          <div 
+            className="flex items-center justify-center gap-1 cursor-pointer bg-gray-600 rounded-l px-2 py-1 hover:bg-gray-500"
+            onClick={() => handleUpvote(experience._id)}
+          >
+            {experience.upvotedBy?.includes(currentUser._id) ? 
+              <BiSolidUpvote className="text-purple-400 "/> :  
+              <BiUpvote className="text-gray-400 hover:text-purple-400" />
+            }
+            <span className="">{experience.upvotes || 0}</span>
+          </div>
+          <div 
+            className="flex items-center justify-center gap-1 cursor-pointer bg-gray-600 rounded-r px-2 py-1 hover:bg-gray-500"
+            onClick={() => navigate(`/post/${exp._id}`)}
+          >
+            <FaRegComment className="text-gray-400 hover:text-purple-400" />
+            <span className="">{experience.commentCount}</span>
+          </div>
         </div>
         
         <CommentSection postId={id} />
