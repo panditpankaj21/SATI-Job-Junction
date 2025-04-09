@@ -1,10 +1,8 @@
-// controllers/comments.js
 const Comment = require('../models/comment.model.js')
 const Post =  require('../models/post.model.js')
 
 const createComment = async (req, res) => {
   try {
-    // Validate post exists
     const post = await Post.findById(req.body.post);
     if (!post) return res.status(404).json({ error: 'Post not found' });
 
@@ -17,7 +15,6 @@ const createComment = async (req, res) => {
 
     await comment.save();
 
-    // If reply, add to parent's replies array
     if (req.body.parentComment) {
       await Comment.findByIdAndUpdate(
         req.body.parentComment,
@@ -52,12 +49,11 @@ const getComments = async (req, res) => {
 
 const deleteComment = async (req, res) => {
   try {
-    // 1. Find the comment and verify permissions
     const comment = await Comment.findOne({
       _id: req.params.id,
       $or: [
-        { user: req.user._id }, // Comment owner
-        { post: req.user._id }  // Post owner
+        { user: req.user._id }, 
+        { post: req.user._id } 
       ]
     });
 
@@ -65,22 +61,17 @@ const deleteComment = async (req, res) => {
       return res.status(403).json({ error: 'Not authorized' });
     }
 
-    // 2. Recursively delete all replies
     const deleteWithReplies = async (commentId) => {
-      // First find all replies
-      const replies = await Comment.find({ parentComment: commentId });
+    const replies = await Comment.find({ parentComment: commentId });
       
-      // Delete each reply and their nested replies
       for (const reply of replies) {
-        await deleteWithReplies(reply._id); // Recursive call
+        await deleteWithReplies(reply._id); 
         await reply.deleteOne();
       }
       
-      // Finally delete the parent comment
       await Comment.findByIdAndDelete(commentId);
     };
 
-    // 3. Execute the recursive deletion
     await deleteWithReplies(req.params.id);
 
     res.json({ message: 'Comment and all replies deleted successfully' });
@@ -93,27 +84,24 @@ const deleteComment = async (req, res) => {
 
 const editComment = async (req, res) => {
   try {
-    // Validate request data
     if (!req.body.content || req.body.content.trim() === '') {
       return res.status(400).json({ error: 'Comment content cannot be empty' });
     }
 
-    // Find the comment and verify ownership
+
     const comment = await Comment.findOne({
       _id: req.params.id,
-      user: req.user._id // Only comment owner can edit
+      user: req.user._id 
     });
 
     if (!comment) {
       return res.status(404).json({ error: 'Comment not found or not authorized' });
     }
 
-    // Update the comment
     comment.content = req.body.content;
-    comment.editedAt = new Date(); // Track edit timestamp
+    comment.editedAt = new Date(); 
     await comment.save();
 
-    // Return the updated comment with populated user data
     const updatedComment = await Comment.findById(comment._id)
       .populate('user', 'name email isVerified');
 
@@ -125,9 +113,37 @@ const editComment = async (req, res) => {
 }
 
 
+
+const getCommentCount = async (req, res) => {
+  try {
+      const postId = req.params.postId;
+      
+      if (!mongoose.Types.ObjectId.isValid(postId)) {
+          return res.status(400).json({ message: 'Invalid post ID format' });
+      }
+
+      const commentCount = await Comment.countDocuments({ post: postId });
+
+      res.status(200).json({ 
+          success: true,
+          commentCount: commentCount
+      });
+  } catch (error) {
+      console.error('Error getting comment count:', error);
+      res.status(500).json({ 
+          success: false,
+          message: 'Internal server error',
+          error: error.message 
+      });
+  }
+};
+
+
+
 module.exports = {
     createComment,
     deleteComment,
     getComments,
-    editComment
+    editComment,
+    getCommentCount
 }

@@ -5,6 +5,10 @@ import { FaTags } from "react-icons/fa";
 import { MdOutlineEdit } from "react-icons/md";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
+import { BiUpvote } from "react-icons/bi";
+import { FaRegComment } from "react-icons/fa";
+import { BiSolidUpvote } from "react-icons/bi";
+
 
 const AllInterviewExperiences = ({
   searchQuery,
@@ -95,6 +99,23 @@ const AllInterviewExperiences = ({
       setShowDeleteModal(false);
       setPostToDelete(null);
     }
+  };
+
+  const handleUpvote = async (postId) => {
+    try {
+      await axios.post(`${import.meta.env.VITE_BACKEND_URI}/api/v1/posts/${postId}/upvote`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }
+        },
+      );
+      fetchData(currentPage);
+      
+    } catch (error) {
+      console.error('Error upvoting post:', error);
+    } 
   };
 
   const handleDeleteCancel = () => {
@@ -216,7 +237,7 @@ const AllInterviewExperiences = ({
         {filteredExperience.length > 0 ? (filteredExperience.map((exp) => (
             <div
               key={exp._id}
-              className="bg-gradient-to-r from-gray-800 to-gray-700 p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 relative"
+              className="bg-gradient-to-r from-gray-800 to-gray-700 px-6 pt-6  pb-4 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 relative"
             >
               <div className="absolute top-2 right-2 flex">
                 <div className="flex">
@@ -241,7 +262,7 @@ const AllInterviewExperiences = ({
                 </div>
               </div>
 
-              {isNewExperience(exp.updatedAt) && (
+              {isNewExperience(exp.createdAt) && (
                 <div className="absolute top-0 left-0 bg-green-700 rounded-r text-white px-2 py-1 text-xs font-extralight">
                   <div className="flex justify-center items-center gap-1">
                     <FaTags />
@@ -260,16 +281,41 @@ const AllInterviewExperiences = ({
                   </h3>
                   <span className="text-gray-400 mb-2 rounded bg-gray-700 px-1">{exp.companyName}</span>
                   <span className="rounded-full text-gray-500 mx-1"> | </span>
-                  <span className="text-gray-400 text-sm font-light">{convertDate(exp.updatedAt)}</span>
+                  <span className="text-gray-400 text-sm font-light">{convertDate(exp.createdAt)}</span>
+                  {exp.createdAt !== exp.updatedAt && (
+                    <>
+                      <span className="rounded-full text-gray-500 mx-1"> | </span>
+                      <span className="text-gray-400 text-sm font-light">edited: {convertDate(exp.updatedAt)}</span>
+                    </>
+                  )}
                   <p className="text-gray-400 mt-1">{exp.user.email}</p>
                 </div>
               </div>
 
-              <div
-                className="mt-4 text-gray-300"
-                dangerouslySetInnerHTML={{ __html: truncateText(exp.content, 100) }}
-              >
-              </div>
+                <div
+                  className="text-gray-300"
+                  dangerouslySetInnerHTML={{ __html: truncateText(exp.content, 100) }}
+                />
+        
+                <div className="mt-5 flex items-center gap-5">
+                  <div 
+                    className="flex items-center justify-center gap-1 cursor-pointer"
+                    onClick={() => handleUpvote(exp._id)}
+                  >
+                    {exp.upvotedBy?.includes(currentUser._id) ? 
+                      <BiSolidUpvote className="text-purple-400"/> :  
+                      <BiUpvote className="text-gray-400 hover:text-purple-400" />
+                    }
+                    <span className="">{exp.upvotes || 0}</span>
+                  </div>
+                  <div 
+                    className="flex items-center justify-center gap-1 cursor-pointer"
+                    onClick={() => navigate(`/post/${exp._id}`)}
+                  >
+                    <FaRegComment className="text-gray-400 hover:text-purple-400" />
+                    <span className="">{exp.commentCount}</span>
+                  </div>
+                </div>
             </div>
           ))
         ) : (<div className="text-center py-10 text-gray-400">

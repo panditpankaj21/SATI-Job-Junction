@@ -51,7 +51,6 @@ const CommentSection = ({ postId }) => {
           Authorization: `Bearer ${localStorage.getItem('token')}`
         }
       });
-      console.log(res.data)
       setComments(res.data);
       setError('');
     } catch (err) {
@@ -325,7 +324,7 @@ const CommentSection = ({ postId }) => {
   };
 
   return (
-    <section className="mt-12 border-t border-gray-700 pt-6">
+    <section className="mt-4 border-t border-gray-700 pt-6">
       <h3 className="text-xl font-semibold text-white mb-6">
         Discussion ({comments.reduce((acc, c) => acc + 1 + (c.replies?.length || 0), 0)})
       </h3>
