@@ -237,7 +237,7 @@ const AllInterviewExperiences = ({
         {filteredExperience.length > 0 ? (filteredExperience.map((exp) => (
             <div
               key={exp._id}
-              className="bg-gradient-to-r from-gray-800 to-gray-700 px-6 pt-6  pb-4 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 relative"
+              className="bg-gradient-to-r from-gray-800 to-gray-700 px-6 pt-6 pb-4 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 relative"
             >
               <div className="absolute top-2 right-2 flex">
                 <div className="flex">
@@ -255,7 +255,7 @@ const AllInterviewExperiences = ({
                 </div>
                 <div>
                   {exp.user.isVerified && (
-                  <div className=" text-purple-400 ml-2">
+                  <div className="text-purple-400 ml-2">
                     <MdVerified className="text-xl" />
                   </div>
                   )}
@@ -271,80 +271,107 @@ const AllInterviewExperiences = ({
                 </div>
               )}
 
-              <div className="flex justify-between items-start">
-                <div>
+              <div className="flex flex-col md:flex-row justify-between items-start gap-4">
+                <div className="w-full">
                   <h3
-                    className="text-xl font-bold cursor-pointer text-purple-400 mb-1"
+                    className="text-xl font-bold cursor-pointer text-purple-400 mb-1 hover:text-purple-300 transition-colors"
                     onClick={() => navigate(`/post/${exp._id}`)}
                   >
                     {exp.title}
                   </h3>
-                  <span className="text-gray-400 mb-2 rounded bg-gray-700 px-1">{exp.companyName}</span>
-                  <span className="rounded-full text-gray-500 mx-1"> | </span>
-                  <span className="text-gray-400 text-sm font-light">{convertDate(exp.createdAt)}</span>
-                  {exp.createdAt !== exp.updatedAt && (
-                    <>
-                      <span className="rounded-full text-gray-500 mx-1"> | </span>
-                      <span className="text-gray-400 text-sm font-light">edited: {convertDate(exp.updatedAt)}</span>
-                    </>
-                  )}
-                  <p className="text-gray-400 mt-1">{exp.user.email}</p>
+                  <div className="flex flex-wrap items-center gap-2 text-sm">
+                    <span className="text-gray-400 rounded bg-gray-700 px-2 py-1">{exp.companyName}</span>
+                    <span className="text-gray-500">|</span>
+                    <span className="text-gray-400 font-light">{convertDate(exp.createdAt)}</span>
+                    {exp.createdAt !== exp.updatedAt && (
+                      <>
+                        <span className="text-gray-500">|</span>
+                        <span className="text-gray-400 text-sm font-light">edited: {convertDate(exp.updatedAt)}</span>
+                      </>
+                    )}
+                  </div>
+                  <p className="text-gray-400 mt-2 text-sm">{exp.user.email}</p>
                 </div>
               </div>
 
-                <div
-                  className="text-gray-300"
-                  dangerouslySetInnerHTML={{ __html: truncateText(exp.content, 100) }}
-                />
-        
-                <div className="mt-5 flex items-center gap-5">
-                  <div 
-                    className="flex items-center justify-center gap-1 cursor-pointer"
-                    onClick={() => handleUpvote(exp._id)}
-                  >
-                    {exp.upvotedBy?.includes(currentUser._id) ? 
-                      <BiSolidUpvote className="text-purple-400"/> :  
-                      <BiUpvote className="text-gray-400 hover:text-purple-400" />
-                    }
-                    <span className="">{exp.upvotes || 0}</span>
-                  </div>
-                  <div 
-                    className="flex items-center justify-center gap-1 cursor-pointer"
-                    onClick={() => navigate(`/post/${exp._id}`)}
-                  >
-                    <FaRegComment className="text-gray-400 hover:text-purple-400" />
-                    <span className="">{exp.commentCount}</span>
-                  </div>
+              <div
+                className="text-gray-300 mt-4 line-clamp-3"
+                dangerouslySetInnerHTML={{ __html: truncateText(exp.content, 100) }}
+              />
+      
+              <div className="mt-5 flex items-center gap-5">
+                <div 
+                  className="flex items-center justify-center gap-1 cursor-pointer group"
+                  onClick={() => handleUpvote(exp._id)}
+                >
+                  {exp.upvotedBy?.includes(currentUser._id) ? 
+                    <BiSolidUpvote className="text-purple-400 text-xl"/> :  
+                    <BiUpvote className="text-gray-400 group-hover:text-purple-400 text-xl transition-colors" />
+                  }
+                  <span className="text-gray-300 group-hover:text-purple-400 transition-colors">{exp.upvotes || 0}</span>
                 </div>
+                <div 
+                  className="flex items-center justify-center gap-1 cursor-pointer group"
+                  onClick={() => navigate(`/post/${exp._id}`)}
+                >
+                  <FaRegComment className="text-gray-400 group-hover:text-purple-400 text-xl transition-colors" />
+                  <span className="text-gray-300 group-hover:text-purple-400 transition-colors">{exp.commentCount}</span>
+                </div>
+              </div>
             </div>
           ))
-        ) : (<div className="text-center py-10 text-gray-400">
-          {searchQuery ? (
-            <p>No experiences found for "{searchQuery}"</p>
-          ) : (
-            <p>No experiences available yet</p>
-          )}
-        </div>
-      )}
+        ) : (
+          <div className="text-center py-10 text-gray-400 bg-gray-800 rounded-lg">
+            {searchQuery ? (
+              <p>No experiences found for "{searchQuery}"</p>
+            ) : (
+              <p>No experiences available yet</p>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Pagination controls */}
-      <div className="flex justify-center mt-6">
-        <button
-          onClick={handlePrevPage}
-          disabled={currentPage === 1}
-          className={`px-4 py-2 rounded-l bg-gray-700 text-white ${currentPage === 1 ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-600 cursor-pointer"}`}
-        >
-          Previous
-        </button>
-        <span className="px-4 py-2 bg-gray-800 text-white">{currentPage} / {totalPages}</span>
-        <button
-          onClick={handleNextPage}
-          disabled={currentPage === totalPages}
-          className={`px-4 py-2 rounded-r bg-gray-700 text-white ${currentPage === totalPages ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-600 cursor-pointer"}`}
-        >
-          Next
-        </button>
+      <div className="flex justify-center mt-8">
+        <div className="flex items-center gap-2 bg-gray-800/50 backdrop-blur-sm p-2 rounded-xl shadow-lg border border-gray-700">
+          <button
+            onClick={handlePrevPage}
+            disabled={currentPage === 1}
+            className={`px-4 py-2 rounded-lg transition-all duration-300 flex items-center gap-2 ${
+              currentPage === 1 
+                ? "bg-gray-700/50 text-gray-500 cursor-not-allowed" 
+                : "bg-gray-700 text-white hover:bg-purple-600 hover:shadow-lg hover:-translate-y-0.5 hover:shadow-purple-500/20 cursor-pointer"
+            }`}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+            </svg>
+            <span className="font-medium">Previous</span>
+          </button>
+          
+          <div className="flex items-center gap-2 mx-2">
+            <div className="flex items-center gap-1 bg-gray-700/50 px-3 py-2 rounded-lg">
+              <span className="text-purple-400 font-semibold">{currentPage}</span>
+              <span className="text-gray-400">/</span>
+              <span className="text-gray-400">{totalPages}</span>
+            </div>
+          </div>
+
+          <button
+            onClick={handleNextPage}
+            disabled={currentPage === totalPages}
+            className={`px-4 py-2 rounded-lg transition-all duration-300 flex items-center gap-2 ${
+              currentPage === totalPages 
+                ? "bg-gray-700/50 text-gray-500 cursor-not-allowed" 
+                : "bg-gray-700 text-white hover:bg-purple-600 hover:shadow-lg hover:-translate-y-0.5 hover:shadow-purple-500/20 cursor-pointer"
+            }`}
+          >
+            <span className="font-medium">Next</span>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
   );
