@@ -127,37 +127,33 @@ const InterviewExperienceDetail = () => {
 
   if (loading) {
     return (
-      <div className="w-full min-h-screen bg-gray-800 p-6">
+      <div className="w-full min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 p-4 md:p-6">
         <div className="max-w-4xl mx-auto animate-pulse">
           {/* Header Skeleton */}
-          <div className="mb-6">
-            <div className="h-8 bg-gray-700 rounded w-3/4 mb-4"></div>
-            <div className="flex items-center gap-2">
-              <div className="h-5 bg-gray-700 rounded w-1/4"></div>
-              <div className="h-3 bg-gray-700 rounded w-4"></div>
-              <div className="h-5 bg-gray-700 rounded w-1/4"></div>
-              <div className="h-3 bg-gray-700 rounded w-4"></div>
-              <div className="h-5 bg-gray-700 rounded w-1/3"></div>
+          <div className="mb-8">
+            <div className="h-8 bg-gray-700 rounded-lg w-3/4 mb-4"></div>
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="h-5 bg-gray-700 rounded-lg w-1/4"></div>
+              <div className="h-3 bg-gray-700 rounded-lg w-4"></div>
+              <div className="h-5 bg-gray-700 rounded-lg w-1/4"></div>
+              <div className="h-3 bg-gray-700 rounded-lg w-4"></div>
+              <div className="h-5 bg-gray-700 rounded-lg w-1/3"></div>
             </div>
           </div>
           
           {/* Content Skeleton */}
-          <div className="space-y-3">
-            <div className="h-4 bg-gray-700 rounded w-full"></div>
-            <div className="h-4 bg-gray-700 rounded w-5/6"></div>
-            <div className="h-4 bg-gray-700 rounded w-2/3"></div>
-            <div className="h-4 bg-gray-700 rounded w-4/5"></div>
-            <div className="h-4 bg-gray-700 rounded w-3/4"></div>
-            <div className="h-4 bg-gray-700 rounded w-full"></div>
-            <div className="h-4 bg-gray-700 rounded w-5/6"></div>
+          <div className="space-y-4">
+            {[...Array(7)].map((_, i) => (
+              <div key={i} className="h-4 bg-gray-700 rounded-lg w-full"></div>
+            ))}
           </div>
           
           {/* Additional content blocks */}
           {[...Array(3)].map((_, i) => (
-            <div key={i} className="mt-6 space-y-3">
-              <div className="h-4 bg-gray-700 rounded w-2/3"></div>
-              <div className="h-4 bg-gray-700 rounded w-full"></div>
-              <div className="h-4 bg-gray-700 rounded w-4/5"></div>
+            <div key={i} className="mt-8 space-y-4">
+              <div className="h-4 bg-gray-700 rounded-lg w-2/3"></div>
+              <div className="h-4 bg-gray-700 rounded-lg w-full"></div>
+              <div className="h-4 bg-gray-700 rounded-lg w-4/5"></div>
             </div>
           ))}
         </div>
@@ -167,12 +163,12 @@ const InterviewExperienceDetail = () => {
 
   if (error) {
     return (
-      <div className="w-full min-h-screen bg-gray-800 flex items-center justify-center">
-        <div className="text-center p-6 max-w-md mx-auto">
+      <div className="w-full min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 flex items-center justify-center p-4">
+        <div className="text-center p-6 max-w-md mx-auto bg-gray-800 rounded-xl shadow-lg">
           <div className="text-red-400 text-xl mb-4">{error}</div>
           <button 
             onClick={fetchData}
-            className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition-colors"
+            className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-all duration-300 transform hover:scale-105"
           >
             Retry
           </button>
@@ -182,23 +178,23 @@ const InterviewExperienceDetail = () => {
   }
 
   return (
-    <div className="w-full min-h-screen bg-gray-800">
+    <div className="w-full min-h-screen bg-gradient-to-b from-gray-900 to-gray-800">
       <Navbar />
-      <div className="max-w-4xl mx-auto p-6">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-purple-400 mb-2">
+      <div className="max-w-4xl mx-auto p-4 md:p-6">
+        <div className="mb-8 bg-gray-800 rounded-xl p-6 shadow-lg">
+          <h1 className="text-2xl md:text-3xl font-bold text-purple-400 mb-4">
             {experience.title}
           </h1>
           
           <div className="flex flex-wrap items-center gap-2 text-sm mb-4">
-            <span className="text-gray-400 bg-gray-700 px-3 py-1 rounded-full">
+            <span className="text-gray-400 bg-gray-700 px-3 py-1 rounded-full hover:bg-gray-600 transition-colors">
               {experience.companyName}
             </span>
-            <span className="text-gray-500">•</span>
+            <span className="text-gray-500 hidden sm:inline">•</span>
             <span className="text-gray-400">
               {convertDate(experience.updatedAt)}
             </span>
-            <span className="text-gray-500">•</span>
+            <span className="text-gray-500 hidden sm:inline">•</span>
             <div className="flex items-center gap-1">
               <span className="text-gray-400">
                 {experience.user.name || experience.user.email.split('@')[0]}
@@ -210,7 +206,7 @@ const InterviewExperienceDetail = () => {
           </div>
         </div>
         
-        <div className="content-wrapper">
+        <div className="content-wrapper bg-gray-800 rounded-xl p-6 shadow-lg">
           {/* Apply global content styles */}
           <style jsx global>{`
             .content-container h2 {
@@ -226,7 +222,8 @@ const InterviewExperienceDetail = () => {
             .content-container p {
               color: #d1d5db;
               margin-bottom: 1rem;
-              line-height: 1.6;
+              line-height: 1.7;
+              font-size: 1.05rem;
             }
             
             .content-container ul, 
@@ -237,9 +234,9 @@ const InterviewExperienceDetail = () => {
             }
             
             .content-container li {
-              margin-bottom: 0.5rem;
+              margin-bottom: 0.75rem;
               position: relative;
-              line-height: 1.5;
+              line-height: 1.6;
             }
             
             .content-container ul li::before {
@@ -272,32 +269,61 @@ const InterviewExperienceDetail = () => {
               color: #e9d5ff;
               font-weight: 600;
             }
+
+            .content-container code {
+              background-color: #2d3748;
+              padding: 0.2rem 0.4rem;
+              border-radius: 0.25rem;
+              font-family: monospace;
+            }
+
+            .content-container pre {
+              background-color: #2d3748;
+              padding: 1rem;
+              border-radius: 0.5rem;
+              overflow-x: auto;
+              margin: 1rem 0;
+            }
+
+            .content-container blockquote {
+              border-left: 4px solid #6b21a8;
+              padding-left: 1rem;
+              margin: 1rem 0;
+              color: #a0aec0;
+            }
+            .content-container a {
+              color:rgb(7, 138, 246);
+              text-decoration: underline;
+            }
+            
           `}</style>
           
           {renderContent(experience.content)}
         </div>
 
-        <div className="mt-5 flex items-center gap-[1px] text-white">
+        <div className="mt-6 flex items-center gap-2">
           <div 
-            className="flex items-center justify-center gap-1 cursor-pointer bg-gray-600 rounded-l px-2 py-1 hover:bg-gray-500"
+            className="flex items-center justify-center gap-2 cursor-pointer bg-gray-700 rounded-lg px-4 py-2 hover:bg-gray-600 transition-all duration-300 transform hover:scale-105"
             onClick={() => handleUpvote(experience._id)}
           >
             {experience.upvotedBy?.includes(currentUser._id) ? 
-              <BiSolidUpvote className="text-purple-400 "/> :  
-              <BiUpvote className="text-gray-400 hover:text-purple-400" />
+              <BiSolidUpvote className="text-purple-400 text-xl"/> :  
+              <BiUpvote className="text-gray-400 hover:text-purple-400 text-xl" />
             }
-            <span className="">{experience.upvotes || 0}</span>
+            <span className="text-gray-300">{experience.upvotes || 0}</span>
           </div>
           <div 
-            className="flex items-center justify-center gap-1 cursor-pointer bg-gray-600 rounded-r px-2 py-1 hover:bg-gray-500"
+            className="flex items-center justify-center gap-2 cursor-pointer bg-gray-700 rounded-lg px-4 py-2 hover:bg-gray-600 transition-all duration-300 transform hover:scale-105"
             onClick={() => navigate(`/post/${exp._id}`)}
           >
-            <FaRegComment className="text-gray-400 hover:text-purple-400" />
-            <span className="">{experience.commentCount}</span>
+            <FaRegComment className="text-gray-400 hover:text-purple-400 text-xl" />
+            <span className="text-gray-300">{experience.commentCount}</span>
           </div>
         </div>
         
-        <CommentSection postId={id} />
+        <div className="mt-8">
+          <CommentSection postId={id} />
+        </div>
       </div>
       <Footer/>
     </div>
