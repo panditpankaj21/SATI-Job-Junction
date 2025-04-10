@@ -5,14 +5,15 @@ import {
   MdReply, 
   MdDelete,
   MdEdit,
-  MdClose
+  MdClose,
+  MdExpandMore,
+  MdExpandLess
 } from 'react-icons/md';
-import { FaUserCircle } from 'react-icons/fa';
-import { timeAgo } from '../utils/timeAgo';
 import Avatar from './Avatar';
+import { timeAgo } from '../utils/timeAgo';
 
-const CommentSection = ({ postId }) => {
-  const [currentUser, setCurrentUser] = useState(null)
+const CommentSection = ({ postId, postAuthorId }) => {
+  const [currentUser, setCurrentUser] = useState(null);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
   const [replyingTo, setReplyingTo] = useState(null);
@@ -20,57 +21,51 @@ const CommentSection = ({ postId }) => {
   const [editContent, setEditContent] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [expandedReplies, setExpandedReplies] = useState({});
   const commentEndRef = useRef(null);
 
-
-  async function fetchCurrentUser(){
-    try{
-      setLoading(true);
-      const res = await axios.get(`${import.meta.env.VITE_BACKEND_URI}/api/v1/users/me`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
-        }
-      })
-
-      setCurrentUser(res.data.user);
-    } catch (error){
-      setError('Failed to load comments. Please refresh.');
-      console.error('Fetch error:', err);
-    }
-    finally{
-      setLoading(false);
-    }
-  }
-
-  // Fetch comments with error handling
-  const fetchComments = async () => {
-    try {
-      setLoading(true);
-      const res = await axios.get(`${import.meta.env.VITE_BACKEND_URI}/api/v1/comments/post/${postId}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-      setComments(res.data);
-      setError('');
-    } catch (err) {
-      setError('Failed to load comments. Please refresh.');
-      console.error('Fetch error:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(()=>{
+  // Fetch current user
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      try {
+        const res = await axios.get(`${import.meta.env.VITE_BACKEND_URI}/api/v1/users/me`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+        setCurrentUser(res.data.user);
+      } catch (err) {
+        console.error('Failed to fetch user:', err);
+      }
+    };
     fetchCurrentUser();
   }, []);
 
-
+  // Fetch comments
   useEffect(() => {
+    const fetchComments = async () => {
+      try {
+        setLoading(true);
+        const res = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URI}/api/v1/comments/post/${postId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`
+            }
+          }
+        );
+        setComments(res.data);
+      } catch (err) {
+        setError('Failed to load comments');
+        console.error('Fetch error:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchComments();
   }, [postId]);
 
-  // Auto-scroll to new comments
+  // Scroll to bottom when comments update
   useEffect(() => {
     commentEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [comments]);
@@ -81,13 +76,26 @@ const CommentSection = ({ postId }) => {
     if (!newComment.trim()) return;
 
     try {
-      console.log(newComment, postId);
+      // Find the root parent comment if replying to a reply
+      let rootParentId = replyingTo;
+      if (replyingTo) {
+        const findRootParent = (commentId) => {
+          const comment = comments.find(c => c._id === commentId) || 
+                         comments.flatMap(c => c.replies || []).find(r => r._id === commentId);
+          if (comment?.parentComment) {
+            return findRootParent(comment.parentComment);
+          }
+          return commentId;
+        };
+        rootParentId = findRootParent(replyingTo);
+      }
+
       const { data } = await axios.post(
         `${import.meta.env.VITE_BACKEND_URI}/api/v1/comments/`,
         {
           content: newComment,
           post: postId,
-          ...(replyingTo && { parentComment: replyingTo })
+          ...(replyingTo && { parentComment: rootParentId })
         },
         {
           headers: {
@@ -97,24 +105,25 @@ const CommentSection = ({ postId }) => {
       );
 
       if (replyingTo) {
+        // Add reply to the root parent comment
         setComments(comments.map(comment => 
-          comment._id === replyingTo
-            ? { ...comment, replies: [...comment.replies, data] }
+          comment._id === rootParentId
+            ? { ...comment, replies: [...(comment.replies || []), data] }
             : comment
         ));
       } else {
+        // Add new top-level comment
         setComments([data, ...comments]);
       }
 
       setNewComment('');
       setReplyingTo(null);
-      fetchComments();
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to post comment');
     }
   };
 
-  // Edit existing comment
+  // Edit comment
   const handleEdit = async () => {
     try {
       await axios.patch(
@@ -127,29 +136,30 @@ const CommentSection = ({ postId }) => {
         }
       );
 
-      const updateCommentInTree = (comment) => {
+      // Update comment in state
+      const updateComment = (comment) => {
         if (comment._id === editingId) {
           return { ...comment, content: editContent };
         }
         if (comment.replies) {
           return {
             ...comment,
-            replies: comment.replies.map(updateCommentInTree)
+            replies: comment.replies.map(updateComment)
           };
         }
         return comment;
       };
 
-      setComments(comments.map(updateCommentInTree));
+      setComments(comments.map(updateComment));
       setEditingId(null);
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to update comment');
     }
   };
 
-  // Delete comment with nested replies
+  // Delete comment
   const handleDelete = async (commentId) => {
-    if (!window.confirm('Delete this comment and all its replies?')) return;
+    if (!window.confirm('Delete this comment?')) return;
 
     try {
       await axios.delete(
@@ -161,49 +171,51 @@ const CommentSection = ({ postId }) => {
         }
       );
 
-      const removeCommentFromTree = (comment) => {
-        if (comment._id === commentId) return null;
-        if (comment.replies) {
-          return {
-            ...comment,
-            replies: comment.replies
-              .map(removeCommentFromTree)
-              .filter(Boolean)
-          };
-        }
-        return comment;
-      };
-
-      setComments(comments.map(removeCommentFromTree).filter(Boolean));
+      // Remove comment from state
+      setComments(comments.filter(comment => comment._id !== commentId));
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to delete comment');
     }
   };
 
-  // Render comment with all nested replies
-  const renderComment = (comment, depth = 0) => {
-    if(!comment.user?._id) return null;   // This is an Edge case Need to handle: TODO
+  // Toggle replies visibility
+  const toggleReplies = (commentId) => {
+    setExpandedReplies(prev => ({
+      ...prev,
+      [commentId]: !prev[commentId]
+    }));
+  };
+
+  // Render comment
+  const renderComment = (comment, isReply = false) => {
+    if (!comment?.user?._id) return null;
+
     const isOwner = currentUser?._id === comment.user._id;
-    const isPostOwner = currentUser?._id === comment.post?.user?._id;
+    const isAdmin = comment.user._id === postAuthorId;
     const isEditing = editingId === comment._id;
+    const hasReplies = comment.replies && comment.replies.length > 0;
+    const repliesExpanded = expandedReplies[comment._id];
 
     return (
       <div 
         key={comment._id}
-        className={`mt-4 ${depth > 0 ? 'ml-8 border-l-2 border-gray-700 pl-4' : ''}`}
+        className={`mt-4 ${isReply ? 'ml-10 pl-3 border-l-2 border-gray-700' : ''} ${
+          isAdmin ? 'bg-gray-800/50 p-3 rounded-lg' : ''
+        }`}
       >
-        <div className="flex gap-2">
-          <div className="relative group">
+        <div className="flex gap-3">
+          <div>
             <Avatar 
               user={comment.user}
-              account={false}
-              className="w-8 h-8 text-sm transition-all"
+              className="w-8 h-8 text-sm"
             />
           </div>
 
           <div className="flex-1 min-w-0">
-            <div className="flex gap-1 items-center flex-wrap">
-              <span className="font-medium text-gray-200 truncate">
+            <div className="flex gap-2 items-center flex-wrap">
+              <span className={`font-medium ${
+                isAdmin ? 'text-purple-300' : 'text-gray-200'
+              } truncate`}>
                 {comment.user.name || comment.user.email.split('@')[0]}
               </span>
               {comment.user.isVerified && (
@@ -259,7 +271,7 @@ const CommentSection = ({ postId }) => {
                     <MdReply /> Reply
                   </button>
 
-                  {(isOwner || isPostOwner) && (
+                  {(isOwner || currentUser?._id === postAuthorId) && (
                     <>
                       {isOwner && (
                         <button
@@ -280,6 +292,16 @@ const CommentSection = ({ postId }) => {
                         <MdDelete /> Delete
                       </button>
                     </>
+                  )}
+
+                  {hasReplies && (
+                    <button
+                      onClick={() => toggleReplies(comment._id)}
+                      className="flex items-center gap-1 text-xs text-gray-400 hover:text-white"
+                    >
+                      {repliesExpanded ? <MdExpandLess /> : <MdExpandMore />}
+                      {comment.replies.length} {comment.replies.length === 1 ? 'reply' : 'replies'}
+                    </button>
                   )}
                 </div>
               </>
@@ -316,26 +338,33 @@ const CommentSection = ({ postId }) => {
           </div>
         </div>
 
-        {/* Render nested replies */}
-        {console.log("comments: ", comment)}
-        {comment.replies?.map(reply => renderComment(reply, depth + 1))}
+        {/* Render replies if expanded */}
+        {hasReplies && repliesExpanded && (
+          <div className="mt-3 space-y-3">
+            {comment.replies.map(reply => renderComment(reply, true))}
+          </div>
+        )}
       </div>
     );
+  };
+
+  // Count total comments (including replies)
+  const countTotalComments = () => {
+    return comments.reduce((total, comment) => {
+      return total + 1 + (comment.replies ? comment.replies.length : 0);
+    }, 0);
   };
 
   return (
     <section className="mt-4 border-t border-gray-700 pt-6">
       <h3 className="text-xl font-semibold text-white mb-6">
-        Discussion ({comments.reduce((acc, c) => acc + 1 + (c.replies?.length || 0), 0)})
+        Discussion ({countTotalComments()})
       </h3>
 
       {error && (
-        <div className="mb-4 p-2 bg-red-900/30 text-red-300 rounded text-sm">
-          {error}
-          <button 
-            onClick={() => setError('')} 
-            className="float-right"
-          >
+        <div className="mb-4 p-2 bg-red-900/30 text-red-300 rounded text-sm flex justify-between items-center">
+          <span>{error}</span>
+          <button onClick={() => setError('')}>
             <MdClose />
           </button>
         </div>
@@ -353,7 +382,7 @@ const CommentSection = ({ postId }) => {
           <button
             type="submit"
             disabled={!newComment.trim()}
-          className={`px-4 py-2 rounded transition ${
+            className={`px-4 py-2 rounded transition ${
               newComment.trim()
                 ? 'bg-purple-600 hover:bg-purple-700 text-white'
                 : 'bg-gray-600 text-gray-400 cursor-not-allowed'
