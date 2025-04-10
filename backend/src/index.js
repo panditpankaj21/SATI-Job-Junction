@@ -13,7 +13,7 @@ app.use(express.json());
 const userRoutes = require('./routes/user.routes');
 const postRoutes = require('./routes/post.routes');
 const commentRoutes = require('./routes/comment.route');
-const notificationRoutes = require('./routes/notificationRoutes');
+const notificationRoutes = require('./routes/notification.route');
 const verifyJWT = require('./middlewares/auth.middleware');
 
 app.use('/api/v1/users', userRoutes);

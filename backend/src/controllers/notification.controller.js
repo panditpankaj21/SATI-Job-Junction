@@ -1,4 +1,4 @@
-const Notification = require('../models/Notification.js');
+const Notification = require('../models/notification.model.js');
 const Post = require('../models/post.model.js');
 const Comment = require('../models/comment.model.js');
 

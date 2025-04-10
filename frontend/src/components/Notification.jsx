@@ -77,7 +77,7 @@ const Notification = () => {
     <div className="relative">
       <button
         onClick={() => setShowDropdown(!showDropdown)}
-        className="relative text flex gap-1 items-center justify-center p-2 text-white hover:text-purple-400 focus:outline-none"
+        className="relative text flex gap-2 items-center justify-center p-2 text-white hover:text-purple-400 focus:outline-none"
       >
         {unreadCount > 0 ? (
           <MdNotificationsActive className="w-6 h-6 text-purple-500" />
@@ -85,7 +85,7 @@ const Notification = () => {
           <MdNotifications className="w-6 h-6" />
         )}
         {unreadCount > 0 && (
-          <span className="absolute top-1 left-3 text-xs px-[6px] py-[2px] text-white transform translate-x-1/2 -translate-y-1/2 bg-red-700 rounded-full">
+          <span className="absolute top-[10px] border-2 border-gray-900 left-2 font-bold text-xs px-[6px] py-[1px] text-white transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">
             {unreadCount}
           </span>
          )} 
