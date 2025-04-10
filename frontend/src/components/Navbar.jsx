@@ -2,6 +2,7 @@ import { useState } from "react";
 import { FaHome, FaSignOutAlt, FaBars, FaTimes } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { GrNotes } from "react-icons/gr";
+import Notification from "./Notification";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -32,7 +33,7 @@ const Navbar = () => {
         </div>
 
         {/* Desktop Navigation Links - hidden on mobile */}
-        <ul className="hidden md:flex space-x-6">
+        <ul className="hidden md:flex space-x-6 items-center">
           <li>
             <a
               href="/"
@@ -52,6 +53,9 @@ const Navbar = () => {
             </a>
           </li>
           <li>
+            <Notification />
+          </li>
+          <li>
             <a
               onClick={handleLogout}
               className="flex items-center hover:text-purple-400 cursor-pointer transition duration-300"
@@ -63,7 +67,8 @@ const Navbar = () => {
         </ul>
 
         {/* Mobile menu button - visible only on mobile */}
-        <div className="md:hidden">
+        <div className="md:hidden flex items-center space-x-4">
+          <Notification />
           <button
             onClick={toggleMenu}
             className="text-white focus:outline-none"
