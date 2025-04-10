@@ -116,6 +116,23 @@ const CommentSection = ({ postId, postAuthorId }) => {
         setComments([data, ...comments]);
       }
 
+      // Create notification for the post author
+      if (currentUser._id !== postAuthorId) {
+        await axios.post(
+          `${import.meta.env.VITE_BACKEND_URI}/api/v1/notifications`,
+          {
+            post: postId,
+            comment: data._id,
+            type: 'comment'
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`
+            }
+          }
+        );
+      }
+
       setNewComment('');
       setReplyingTo(null);
     } catch (err) {

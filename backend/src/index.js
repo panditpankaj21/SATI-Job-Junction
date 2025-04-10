@@ -12,12 +12,14 @@ app.use(express.json());
 // Routes
 const userRoutes = require('./routes/user.routes');
 const postRoutes = require('./routes/post.routes');
-const commentRoutes = require('./routes/comment.route')
+const commentRoutes = require('./routes/comment.route');
+const notificationRoutes = require('./routes/notificationRoutes');
 const verifyJWT = require('./middlewares/auth.middleware');
 
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/posts', verifyJWT, postRoutes);
-app.use('/api/v1/comments', verifyJWT, commentRoutes)
+app.use('/api/v1/comments', verifyJWT, commentRoutes);
+app.use('/api/v1/notifications', verifyJWT, notificationRoutes);
 
 connectDB()
 .then(() => {
