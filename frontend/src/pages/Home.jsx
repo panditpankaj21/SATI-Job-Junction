@@ -73,7 +73,7 @@ export default function Home() {
       {/* Interview Experience Form Modal */}
       {isFormModalOpen && (
         <div className="fixed inset-0 bg-black/75 flex justify-center items-center p-4 z-50">
-          <div className="bg-gray-800 rounded-lg p-6 max-w-3xl w-full max-h-[80vh] overflow-y-auto styled-scrollbar border-2 border-purple-500">
+          <div className="bg-gray-800 rounded-xl max-w-3xl w-full max-h-[80vh] overflow-y-auto styled-scrollbar ">
             <InterviewExperienceForm
               onClose={closeFormModal}
             />
@@ -85,7 +85,7 @@ export default function Home() {
       {/* Update Interview Experience modal */}
       {isUpdateModalOpen && (
         <div className="fixed inset-0 bg-black/75 flex justify-center items-center p-4 z-50">
-          <div className="bg-gray-800 rounded-lg p-6 max-w-3xl w-full max-h-[80vh] overflow-y-auto styled-scrollbar border-2 border-purple-500">
+          <div className="bg-gray-800 rounded-xl max-w-3xl w-full max-h-[80vh] overflow-y-auto styled-scrollbar">
             <InterviewExperienceForm
               onClose={closeFormModal}
               oldCompanyName={oldCompanyName}

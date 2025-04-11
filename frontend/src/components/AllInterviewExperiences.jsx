@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { MdVerified } from "react-icons/md";
 import axios from 'axios';
-import { FaTags } from "react-icons/fa";
+import { FaTags, FaRegComment } from "react-icons/fa";
 import { MdOutlineEdit } from "react-icons/md";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
-import { BiUpvote } from "react-icons/bi";
-import { FaRegComment } from "react-icons/fa";
-import { BiSolidUpvote } from "react-icons/bi";
-
+import { BiUpvote, BiSolidUpvote } from "react-icons/bi";
 
 const AllInterviewExperiences = ({
   searchQuery,
@@ -68,15 +65,9 @@ const AllInterviewExperiences = ({
 
   useEffect(() => {
     if (searchQuery) {
-      const filtered = experience.filter(exp => 
-        exp.companyName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        exp.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        exp.content.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-      setFilteredExperience(filtered);
-    } else {
-      setFilteredExperience(experience);
-    }
+      
+      fetchData(1, searchQuery);
+    } 
   }, [searchQuery, experience]);
 
 
@@ -160,29 +151,29 @@ const AllInterviewExperiences = ({
   if(loading){
     return (
       <div className="md:w-[70%] w-full mx-auto mb-5">
-        <h2 className="text-2xl font-bold text-white mb-6">Interview Experiences</h2>
+        <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 mb-6">
+          Interview Experiences
+        </h2>
         
         <div className="space-y-4">
           {[...Array(5)].map((_, index) => (
             <div
               key={index}
-              className="bg-gradient-to-r from-gray-800 to-gray-700 p-6 rounded-lg shadow-lg"
+              className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-gray-700/30 animate-pulse"
             >
-              <div className="animate-pulse">
-                <div className="flex justify-between items-start">
-                  <div className="w-full">
-                    <div className="h-6 bg-gray-600 rounded w-3/4 mb-4"></div>
-                    <div className="h-4 bg-gray-600 rounded w-1/2 mb-3"></div>
-                    <div className="h-4 bg-gray-600 rounded w-1/3 mb-3"></div>
-                    <div className="h-4 bg-gray-600 rounded w-1/4 mb-3"></div>
-                  </div>
+              <div className="flex justify-between items-start">
+                <div className="w-full">
+                  <div className="h-6 bg-gradient-to-r from-gray-700/50 to-gray-800/50 rounded-lg w-3/4 mb-4"></div>
+                  <div className="h-4 bg-gradient-to-r from-gray-700/50 to-gray-800/50 rounded-lg w-1/2 mb-3"></div>
+                  <div className="h-4 bg-gradient-to-r from-gray-700/50 to-gray-800/50 rounded-lg w-1/3 mb-3"></div>
+                  <div className="h-4 bg-gradient-to-r from-gray-700/50 to-gray-800/50 rounded-lg w-1/4 mb-3"></div>
                 </div>
+              </div>
 
-                <div className="mt-4 space-y-2">
-                  <div className="h-3 bg-gray-600 rounded w-full"></div>
-                  <div className="h-3 bg-gray-600 rounded w-5/6"></div>
-                  <div className="h-3 bg-gray-600 rounded w-4/6"></div>
-                </div>
+              <div className="mt-4 space-y-2">
+                <div className="h-3 bg-gradient-to-r from-gray-700/50 to-gray-800/50 rounded-lg w-full"></div>
+                <div className="h-3 bg-gradient-to-r from-gray-700/50 to-gray-800/50 rounded-lg w-5/6"></div>
+                <div className="h-3 bg-gradient-to-r from-gray-700/50 to-gray-800/50 rounded-lg w-4/6"></div>
               </div>
             </div>
           ))}
@@ -195,11 +186,13 @@ const AllInterviewExperiences = ({
     <div className="md:w-[70%] w-full p-2 md:p-0 mx-auto mb-5">
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-          <div className="bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md border border-purple-500">
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-xl shadow-2xl p-6 w-full max-w-md border border-red-500/30">
             <div className="flex flex-col items-center">
-              <RiDeleteBin6Line className="text-red-500 text-5xl mb-4" />
-              <h3 className="text-xl font-bold text-white mb-2">Delete Experience</h3>
+              <RiDeleteBin6Line className="text-red-500 text-5xl mb-4 transform hover:scale-110 transition-transform duration-300" />
+              <h3 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-red-500 mb-2">
+                Delete Experience
+              </h3>
               <p className="text-gray-300 text-center mb-6">
                 Are you sure you want to delete this interview experience? This action cannot be undone.
               </p>
@@ -207,13 +200,13 @@ const AllInterviewExperiences = ({
               <div className="flex gap-4 w-full">
                 <button
                   onClick={handleDeleteCancel}
-                  className="flex-1 py-2 px-4 rounded-lg bg-gray-700 text-white hover:bg-gray-600 transition-colors"
+                  className="flex-1 py-2 px-4 rounded-lg bg-gradient-to-r from-gray-700/50 to-gray-800/50 text-white hover:from-gray-600/50 hover:to-gray-700/50 transition-all duration-300"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleDeleteConfirm}
-                  className="flex-1 py-2 px-4 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors flex items-center justify-center gap-2"
+                  className="flex-1 py-2 px-4 rounded-lg bg-gradient-to-r from-red-600/90 to-red-700/90 text-white hover:from-red-500/90 hover:to-red-600/90 transition-all duration-300 flex items-center justify-center gap-2"
                 >
                   <RiDeleteBin6Line />
                   Delete
@@ -224,7 +217,7 @@ const AllInterviewExperiences = ({
         </div>
       )}
 
-      <h2 className="text-2xl font-bold text-white mb-6">
+      <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 mb-6">
         Interview Experiences
         {searchQuery && (
           <span className="text-sm text-gray-400 ml-2">
@@ -235,112 +228,121 @@ const AllInterviewExperiences = ({
 
       <div className="space-y-4">
         {filteredExperience.length > 0 ? (filteredExperience.map((exp) => (
-            <div
-              key={exp._id}
-              className="bg-gradient-to-r from-gray-800 to-gray-700 px-6 pt-6 pb-4 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 relative"
-            >
-              <div className="absolute top-2 right-2 flex">
-                <div className="flex">
-                  {currentUser?._id === exp.user._id && 
-                  (<div className="flex text-xl gap-1">
-                    <MdOutlineEdit 
-                      className="text-blue-200 hover:text-blue-300 cursor-pointer"
-                      onClick={() => handleEdit(exp)}
-                    />
-                    <RiDeleteBin6Line 
-                      onClick={() => handleDeleteClick(exp._id)} 
-                      className="text-red-500 hover:text-red-600 cursor-pointer"
-                    />
-                  </div>)}
-                </div>
-                <div>
-                  {exp.user.isVerified && (
-                  <div className="text-purple-400 ml-2">
-                    <MdVerified className="text-xl" />
-                  </div>
-                  )}
-                </div>
+          <div
+            key={exp._id}
+            className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-gray-700/30 hover:border-purple-500/30 transition-all duration-300 relative group hover:-translate-y-1"
+          >
+            <div className="absolute top-4 right-4 flex items-center gap-3">
+              <div className="flex">
+                {currentUser?._id === exp.user._id && 
+                (<div className="flex text-xl gap-2">
+                  <MdOutlineEdit 
+                    className="text-blue-400 hover:text-blue-300 cursor-pointer transform hover:scale-110 transition-all duration-300"
+                    onClick={() => handleEdit(exp)}
+                  />
+                  <RiDeleteBin6Line 
+                    onClick={() => handleDeleteClick(exp._id)} 
+                    className="text-red-500 hover:text-red-400 cursor-pointer transform hover:scale-110 transition-all duration-300"
+                  />
+                </div>)}
               </div>
-
-              {isNewExperience(exp.createdAt) && (
-                <div className="absolute top-0 left-0 bg-green-700 rounded-r text-white px-2 py-1 text-xs font-extralight">
-                  <div className="flex justify-center items-center gap-1">
-                    <FaTags />
-                    <p>New</p>
-                  </div>
+              <div>
+                {exp.user.isVerified && (
+                <div className="text-purple-400 ml-2">
+                  <MdVerified className="text-xl transform group-hover:scale-110 transition-transform duration-300" />
                 </div>
-              )}
-
-              <div className="flex flex-col md:flex-row justify-between items-start gap-4">
-                <div className="w-full">
-                  <h3
-                    className="text-xl font-bold cursor-pointer text-purple-400 mb-1 hover:text-purple-300 transition-colors"
-                    onClick={() => navigate(`/post/${exp._id}`)}
-                  >
-                    {exp.title}
-                  </h3>
-                  <div className="flex flex-wrap items-center gap-2 text-sm">
-                    <span className="text-gray-400 rounded bg-gray-700 px-2 py-1">{exp.companyName}</span>
-                    <span className="text-gray-500">|</span>
-                    <span className="text-gray-400 font-light">{convertDate(exp.createdAt)}</span>
-                    {exp.createdAt !== exp.updatedAt && (
-                      <>
-                        <span className="text-gray-500">|</span>
-                        <span className="text-gray-400 text-sm font-light">edited: {convertDate(exp.updatedAt)}</span>
-                      </>
-                    )}
-                  </div>
-                  <p className="text-gray-400 mt-2 text-sm">{exp.user.email}</p>
-                </div>
-              </div>
-
-              <div
-                className="text-gray-300 mt-4 line-clamp-3"
-                dangerouslySetInnerHTML={{ __html: truncateText(exp.content, 100) }}
-              />
-      
-              <div className="mt-5 flex items-center gap-5">
-                <div 
-                  className="flex items-center justify-center gap-1 cursor-pointer group"
-                  onClick={() => handleUpvote(exp._id)}
-                >
-                  {exp.upvotedBy?.includes(currentUser._id) ? 
-                    <BiSolidUpvote className="text-purple-400 text-xl"/> :  
-                    <BiUpvote className="text-gray-400 group-hover:text-purple-400 text-xl transition-colors" />
-                  }
-                  <span className="text-gray-300 group-hover:text-purple-400 transition-colors">{exp.upvotes || 0}</span>
-                </div>
-                <div 
-                  className="flex items-center justify-center gap-1 cursor-pointer group"
-                  onClick={() => navigate(`/post/${exp._id}`)}
-                >
-                  <FaRegComment className="text-gray-400 group-hover:text-purple-400 text-xl transition-colors" />
-                  <span className="text-gray-300 group-hover:text-purple-400 transition-colors">{exp.commentCount}</span>
-                </div>
+                )}
               </div>
             </div>
-          ))
-        ) : (
-          <div className="text-center py-10 text-gray-400 bg-gray-800 rounded-lg">
-            {searchQuery ? (
-              <p>No experiences found for "{searchQuery}"</p>
-            ) : (
-              <p>No experiences available yet</p>
+
+            {isNewExperience(exp.createdAt) && (
+              <div className="absolute top-0 left-0 bg-gradient-to-r from-green-600/90 to-green-700/90 backdrop-blur-sm rounded-r-xl text-white px-3 py-1 text-xs font-medium transform group-hover:scale-105 transition-transform duration-300">
+                <div className="flex justify-center items-center gap-1">
+                  <FaTags />
+                  <p>New</p>
+                </div>
+              </div>
             )}
+
+            <div className="flex flex-col md:flex-row justify-between items-start gap-4">
+              <div className="w-full">
+                <h3
+                  className="text-xl font-bold cursor-pointer text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 mb-1 hover:from-purple-300 hover:to-pink-300 transition-all duration-300"
+                  onClick={() => navigate(`/post/${exp._id}`)}
+                >
+                  {exp.title}
+                </h3>
+                <div className="flex flex-wrap items-center gap-2 text-sm">
+                  <span className="text-gray-300 rounded-lg bg-gradient-to-r from-gray-700/50 to-gray-800/50 px-3 py-1 border border-gray-600/30">
+                    {exp.companyName}
+                  </span>
+                  <span className="text-gray-500">|</span>
+                  <span className="text-gray-400 font-light">{convertDate(exp.createdAt)}</span>
+                  {exp.createdAt !== exp.updatedAt && (
+                    <>
+                      <span className="text-gray-500">|</span>
+                      <span className="text-gray-400 text-sm font-light">
+                        edited: {convertDate(exp.updatedAt)}
+                      </span>
+                    </>
+                  )}
+                </div>
+                <p className="text-gray-400 mt-2 text-sm">{exp.user.email}</p>
+              </div>
+            </div>
+
+            <div
+              className="text-gray-300 mt-4 line-clamp-3"
+              dangerouslySetInnerHTML={{ __html: truncateText(exp.content, 100) }}
+            />
+    
+            <div className="mt-5 flex items-center gap-5">
+              <div 
+                className="flex items-center justify-center gap-1 cursor-pointer group"
+                onClick={() => handleUpvote(exp._id)}
+              >
+                {exp.upvotedBy?.includes(currentUser._id) ? 
+                  <BiSolidUpvote className="text-purple-400 text-xl group-hover:text-purple-300 transform group-hover:scale-110 transition-all duration-300"/> :  
+                  <BiUpvote className="text-gray-400 group-hover:text-purple-400 text-xl transform group-hover:scale-110 transition-all duration-300" />
+                }
+                <span className="text-gray-300 group-hover:text-purple-400 transition-colors">
+                  {exp.upvotes || 0}
+                </span>
+              </div>
+              <div 
+                className="flex items-center justify-center gap-1 cursor-pointer group"
+                onClick={() => navigate(`/post/${exp._id}`)}
+              >
+                <FaRegComment className="text-gray-400 group-hover:text-purple-400 text-xl transform group-hover:scale-110 transition-all duration-300" />
+                <span className="text-gray-300 group-hover:text-purple-400 transition-colors">
+                  {exp.commentCount}
+                </span>
+              </div>
+            </div>
+          </div>
+        ))) : (
+          <div className="text-center py-10 text-gray-400 bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm rounded-xl border border-gray-700/30">
+            <p className="text-lg">
+              {searchQuery ? (
+                `No experiences found for "${searchQuery}"`
+              ) : (
+                "No experiences available yet"
+              )}
+            </p>
           </div>
         )}
       </div>
 
       {/* Pagination controls */}
       <div className="flex justify-center mt-8">
-        <div className="flex items-center gap-2 bg-gray-800/50 backdrop-blur-sm p-2 rounded-xl shadow-lg border border-gray-700">
+        <div className="flex items-center gap-2 bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm p-3 rounded-xl shadow-lg border border-gray-700/30">
           <button
             onClick={handlePrevPage}
             disabled={currentPage === 1}
-            className={`px-4 py-2 rounded-lg transition-all duration-300 flex items-center gap-2 ${
+            className={`px-4 py-2 rounded-lg transition-all duration-300 flex items-center gap-2 transform hover:-translate-y-0.5 ${
               currentPage === 1 
-                ? "bg-gray-700/50 text-gray-500 cursor-not-allowed" 
-                : "bg-gray-700 text-white hover:bg-purple-600 hover:shadow-lg hover:-translate-y-0.5 hover:shadow-purple-500/20 cursor-pointer"
+                ? "bg-gradient-to-r from-gray-700/50 to-gray-800/50 text-gray-500 cursor-not-allowed" 
+                : "bg-gradient-to-r from-gray-700/50 to-gray-800/50 text-white hover:from-purple-600/50 hover:to-purple-700/50 cursor-pointer"
             }`}
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
@@ -350,7 +352,7 @@ const AllInterviewExperiences = ({
           </button>
           
           <div className="flex items-center gap-2 mx-2">
-            <div className="flex items-center gap-1 bg-gray-700/50 px-3 py-2 rounded-lg">
+            <div className="flex items-center gap-1 bg-gradient-to-r from-gray-700/50 to-gray-800/50 px-3 py-2 rounded-lg">
               <span className="text-purple-400 font-semibold">{currentPage}</span>
               <span className="text-gray-400">/</span>
               <span className="text-gray-400">{totalPages}</span>
@@ -360,10 +362,10 @@ const AllInterviewExperiences = ({
           <button
             onClick={handleNextPage}
             disabled={currentPage === totalPages}
-            className={`px-4 py-2 rounded-lg transition-all duration-300 flex items-center gap-2 ${
+            className={`px-4 py-2 rounded-lg transition-all duration-300 flex items-center gap-2 transform hover:-translate-y-0.5 ${
               currentPage === totalPages 
-                ? "bg-gray-700/50 text-gray-500 cursor-not-allowed" 
-                : "bg-gray-700 text-white hover:bg-purple-600 hover:shadow-lg hover:-translate-y-0.5 hover:shadow-purple-500/20 cursor-pointer"
+                ? "bg-gradient-to-r from-gray-700/50 to-gray-800/50 text-gray-500 cursor-not-allowed" 
+                : "bg-gradient-to-r from-gray-700/50 to-gray-800/50 text-white hover:from-purple-600/50 hover:to-purple-700/50 cursor-pointer"
             }`}
           >
             <span className="font-medium">Next</span>

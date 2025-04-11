@@ -104,38 +104,40 @@ const OtpVerificationModal = ({ email, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/70 flex justify-center items-center p-4 z-50">
-      <div className="bg-gray-800 rounded-xl p-6 w-full max-w-md relative">
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex justify-center items-center p-4 z-50">
+      <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-8 w-full max-w-md relative shadow-2xl border border-gray-700/30">
         <button 
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-white text-2xl"
+          className="absolute top-4 right-4 text-gray-400 hover:text-white text-2xl transition-colors"
         >
           &times;
         </button>
 
-        <h2 className="text-2xl font-bold mb-4 text-center">Verify Your Email</h2>
+        <h2 className="text-2xl font-bold mb-6 text-center bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+          Verify Your Email
+        </h2>
         
         {!isOtpSent ? (
-          <div className="space-y-4">
+          <div className="space-y-6">
             <p className="text-gray-300 text-center">
-              We'll send a 6-digit code to <span className="font-semibold">{email}</span> to verify your account.
+              We'll send a 6-digit code to <span className="font-semibold text-white">{email}</span> to verify your account.
             </p>
             <button
               onClick={handleSendOtp}
               disabled={isLoading}
-              className="w-full bg-purple-600 text-white py-2 px-4 rounded hover:bg-purple-700 transition duration-300 disabled:opacity-50"
+              className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3 px-4 rounded-xl hover:from-purple-700 hover:to-blue-700 transition-all duration-300 disabled:opacity-50 shadow-lg hover:shadow-purple-500/20"
             >
               {isLoading ? "Sending..." : "Send OTP"}
             </button>
           </div>
         ) : (
-          <div className="space-y-6">
+          <div className="space-y-8">
             <p className="text-gray-300 text-center">
-              Enter the 6-digit code sent to <span className="font-semibold">{email}</span>.
-              <br />Expires in: <span className="text-yellow-400">{formatTime(countdown)}</span>
+              Enter the 6-digit code sent to <span className="font-semibold text-white">{email}</span>.
+              <br />Expires in: <span className="text-yellow-400 font-medium">{formatTime(countdown)}</span>
             </p>
             
-            <div className="flex justify-center space-x-2" onPaste={handlePaste}>
+            <div className="flex justify-center space-x-3" onPaste={handlePaste}>
               {otp.map((digit, index) => (
                 <input
                   key={index}
@@ -145,7 +147,7 @@ const OtpVerificationModal = ({ email, onClose }) => {
                   value={digit}
                   onChange={(e) => handleOtpChange(index, e.target.value)}
                   onKeyDown={(e) => handleKeyDown(index, e)}
-                  className="w-12 h-12 text-2xl text-center bg-gray-700 rounded border border-gray-600 focus:border-purple-500 focus:outline-none"
+                  className="w-14 h-14 text-2xl text-center bg-gray-800/50 rounded-xl border-2 border-gray-700 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/30 focus:outline-none transition-all duration-200"
                   maxLength="1"
                   autoFocus={index === 0}
                 />
@@ -155,7 +157,7 @@ const OtpVerificationModal = ({ email, onClose }) => {
             <button
               onClick={handleVerifyOtp}
               disabled={otp.some(d => d === "") || isLoading}
-              className="w-full bg-purple-600 text-white py-2 px-4 rounded hover:bg-purple-700 transition duration-300 disabled:opacity-50"
+              className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3 px-4 rounded-xl hover:from-purple-700 hover:to-blue-700 transition-all duration-300 disabled:opacity-50 shadow-lg hover:shadow-purple-500/20"
             >
               {isLoading ? "Verifying..." : "Verify OTP"}
             </button>
@@ -163,7 +165,7 @@ const OtpVerificationModal = ({ email, onClose }) => {
             <button
               onClick={handleSendOtp}
               disabled={countdown > 540 || isLoading}
-              className="w-full text-purple-400 hover:text-purple-300 text-sm disabled:opacity-50"
+              className="w-full text-purple-400 hover:text-purple-300 text-sm transition-colors disabled:opacity-50"
             >
               Didn't receive code? Resend
             </button>
@@ -171,8 +173,10 @@ const OtpVerificationModal = ({ email, onClose }) => {
         )}
 
         {message && (
-          <p className={`mt-4 text-center ${
-            message.includes("success") ? "text-green-400" : "text-red-400"
+          <p className={`mt-6 text-center text-sm font-medium ${
+            message.includes("success") 
+              ? "text-green-400 bg-green-400/10 py-2 px-4 rounded-lg" 
+              : "text-red-400 bg-red-400/10 py-2 px-4 rounded-lg"
           }`}>
             {message}
           </p>

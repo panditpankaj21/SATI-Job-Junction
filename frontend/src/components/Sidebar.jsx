@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { FaSearch } from "react-icons/fa";
+import { FaSearch, FaPlus } from "react-icons/fa";
 import { MdVerifiedUser } from "react-icons/md";
 import axios from "axios";
 import Avatar from "./Avatar";
@@ -23,7 +23,6 @@ const Sidebar = ({ onSearch, onAddExperience, onVerifyRequest }) => {
     e.preventDefault();
     onSearch(searchQuery);
     updateRecentSearches(searchQuery);
-    
   };
 
   const updateRecentSearches = (query) => {
@@ -31,12 +30,9 @@ const Sidebar = ({ onSearch, onAddExperience, onVerifyRequest }) => {
     
     setRecentSearches(prev => {
       const withoutCurrent = prev.filter(item => item !== query);
-      
       const updated = [query, ...withoutCurrent];
-      
       const limited = updated.slice(0, 5);
       localStorage.setItem('recentSearches', JSON.stringify(limited));
-      
       return limited;
     });
   };
@@ -58,7 +54,6 @@ const Sidebar = ({ onSearch, onAddExperience, onVerifyRequest }) => {
         });
         setUser(response.data.user);
         
-        // Load recent searches from localStorage if available
         const savedSearches = localStorage.getItem('recentSearches');
         if (savedSearches) {
           setRecentSearches(JSON.parse(savedSearches));
@@ -72,39 +67,65 @@ const Sidebar = ({ onSearch, onAddExperience, onVerifyRequest }) => {
     fetchData();
   }, []);
 
-  if (isLoading) return <div className="w-64 m-2 text-white">Loading user...</div>;
-  if (!user) return <div className="w-64 m-2 text-white">Please log in</div>;
+  if (isLoading) return (
+    <div className="w-full md:w-64 m-2 p-4 bg-gray-900/50 backdrop-blur-sm rounded-xl animate-pulse">
+      <div className="h-16 w-16 rounded-full bg-gray-700 mx-auto mb-4"></div>
+      <div className="h-4 w-3/4 bg-gray-700 rounded mx-auto mb-2"></div>
+      <div className="h-4 w-1/2 bg-gray-700 rounded mx-auto"></div>
+    </div>
+  );
+
+  if (!user) return (
+    <div className="w-full md:w-64 m-2 p-4 bg-gray-900/50 backdrop-blur-sm rounded-xl text-center text-white">
+      Please log in
+    </div>
+  );
 
   return (
-    <div className="md:w-64 w-full m-2 text-white">
+    <div className="w-full md:w-64 m-2 text-white">
       {/* User Profile */}
-      <div className="flex flex-col items-center mb-2 bg-gray-900 p-5 rounded-xl">
-        <Avatar user={user} className="w-16 h-16 text-4xl" onAvatarChange={handleAvatarChange}/>
-        <h3 className="text-lg font-bold">{user.name}</h3>
-        <p className="text-gray-400 flex items-center gap-1">{user.email} {user.isVerified && <MdVerifiedUser className="text-green-300"/>}</p>
-        {!user.isVerified && <button 
-          className={`border px-3 py-1 cursor-pointer rounded mt-1 bg-yellow-900/40 border-yellow-500 hover:bg-yellow-900/75`}
-          onClick={() => onVerifyRequest(user.email)}
-        >
-          Verify
-        </button>}
+      <div className="flex flex-col items-center mb-4 bg-gradient-to-br from-gray-900 to-gray-800 p-6 rounded-xl shadow-lg border border-gray-700/50 hover:border-purple-500/30 transition-all duration-300">
+        <div className="relative group">
+          <Avatar user={user} className="w-20 h-20 text-4xl transform transition-transform duration-300 group-hover:scale-110" onAvatarChange={handleAvatarChange}/>
+          {/* <div className="absolute inset-0 rounded-full bg-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div> */}
+        </div>
+        <h3 className="text-xl font-bold mt-4 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">{user.name}</h3>
+        <p className="text-gray-400 flex items-center gap-1 mt-1">
+          {user.email} 
+          {user.isVerified && <MdVerifiedUser className="text-green-400 transform transition-transform duration-300 hover:scale-110"/>}
+        </p>
+        {!user.isVerified && (
+          <button 
+            className="mt-3 px-4 py-2 bg-gradient-to-r from-yellow-600 to-yellow-700 text-white rounded-lg 
+                     hover:from-yellow-500 hover:to-yellow-600 transform transition-all duration-300 
+                     hover:scale-105 hover:shadow-lg hover:shadow-yellow-500/20 border border-yellow-500/30"
+            onClick={() => onVerifyRequest(user.email)}
+          >
+            Verify Account
+          </button>
+        )}
       </div>
 
       {/* Search Bar */}
-      <div className="bg-gray-900 p-5 rounded-xl">
-        <form onSubmit={handleSearchSubmit} className="">
-          <label>Company Name</label>
-          <div className="flex items-center mt-2 relative">
+      <div className="bg-gradient-to-br from-gray-900 to-gray-800 p-6 rounded-xl shadow-lg border border-gray-700/50 hover:border-purple-500/30 transition-all duration-300">
+        <form onSubmit={handleSearchSubmit} className="space-y-4">
+          <label className="block text-sm font-medium text-gray-300">Search Companies</label>
+          <div className="flex items-center relative group">
             <input
               type="text"
               value={searchQuery}
               onChange={handleSearchChange}
-              placeholder="Search by company..."
-              className="w-full p-2 rounded bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+              placeholder="Enter company name..."
+              className="w-full p-3 rounded-lg bg-gray-800/50 text-white 
+                       focus:outline-none focus:ring-2 focus:ring-purple-500 
+                       border border-gray-700/50 group-hover:border-purple-500/30
+                       transition-all duration-300"
             />
             <button
               type="submit"
-              className="bg-purple-600 absolute right-0 p-3 rounded-r hover:bg-purple-700 transition duration-300"
+              className="absolute right-2 p-2 bg-gradient-to-r from-purple-600 to-purple-700 
+                       rounded-lg hover:from-purple-500 hover:to-purple-600 
+                       transform transition-all duration-300 hover:scale-110"
             >
               <FaSearch className="text-white" />
             </button>
@@ -113,16 +134,19 @@ const Sidebar = ({ onSearch, onAddExperience, onVerifyRequest }) => {
 
         {/* Recently Searched Keywords */}
         {recentSearches.length > 0 && (
-          <div className="mt-4">
-            <h4 className="text-sm text-gray-400 mb-2">Recent Searches:</h4>
+          <div className="mt-6">
+            <h4 className="text-sm font-medium text-gray-300 mb-3">Recent Searches:</h4>
             <div className="flex flex-wrap gap-2">
               {recentSearches.map((query, index) => (
                 <button
                   key={index}
                   onClick={() => handleRecentSearchClick(query)}
-                  className="flex items-center bg-gray-700 text-white px-2 py-1 rounded-full text-sm hover:bg-gray-600 transition duration-300"
+                  className="flex items-center bg-gray-800/50 text-white px-3 py-1.5 rounded-full 
+                           text-sm hover:bg-purple-600/50 hover:scale-105 
+                           transform transition-all duration-300 border border-gray-700/50 
+                           hover:border-purple-500/30"
                 >
-                  <FaSearch className="mr-1 text-xs" />
+                  <FaSearch className="mr-2 text-xs" />
                   {query}
                 </button>
               ))}
@@ -131,12 +155,18 @@ const Sidebar = ({ onSearch, onAddExperience, onVerifyRequest }) => {
         )}
       </div>
 
-      <div className="mt-2">
+      {/* Add Experience Button */}
+      <div className="mt-4">
         <button
           onClick={onAddExperience}
-          className="w-full bg-purple-600 text-white py-2 px-4 rounded hover:bg-purple-700 transition duration-300"
+          className="w-full bg-gradient-to-r from-purple-600 to-purple-700 text-white 
+                   py-3 px-4 rounded-lg hover:from-purple-500 hover:to-purple-600 
+                   transform transition-all duration-300 hover:scale-105 hover:shadow-lg 
+                   hover:shadow-purple-500/20 flex items-center justify-center gap-2
+                   border border-purple-500/30"
         >
-          + Add Yours
+          <FaPlus className="text-lg" />
+          Add Your Experience
         </button>
       </div>
     </div>

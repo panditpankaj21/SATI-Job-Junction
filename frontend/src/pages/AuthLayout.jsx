@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { FaUser, FaEnvelope, FaLock, FaEye, FaEyeSlash, FaUniversity, FaSpinner } from 'react-icons/fa';
-import { MdVerified } from 'react-icons/md';
+import { FaUser, FaEnvelope, FaLock, FaEye, FaEyeSlash, FaSpinner } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
@@ -86,331 +85,316 @@ const AuthLayout = ({ isSignUp }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 flex">
-      {/* Left Side - College Branding */}
-      <div className="hidden lg:flex w-1/2 bg-gradient-to-br from-purple-900 to-indigo-900 items-center justify-center p-12">
-        <div className="max-w-md">
-          <div className="flex items-center justify-center mb-8">
-            <img 
-              src="/SATI/sati-logo.png" 
-              alt="logo" 
-              className="w-14 h-16 mr-2"
-            />
-            <h1 className="text-4xl font-bold text-white">SATI Job Junction</h1>
-          </div>
-          
-          <div className="backdrop-blur-md rounded-xl p-6 border border-white border-opacity-20">
-            <h2 className="text-2xl font-semibold text-white mb-4">Why Join Us?</h2>
-            <ul className="space-y-3 text-gray-300">
-              <li className="flex items-start">
-                <MdVerified className="text-purple-400 mt-1 mr-2 flex-shrink-0" />
-                <span>Connect with alumni and industry professionals</span>
-              </li>
-              <li className="flex items-start">
-                <MdVerified className="text-purple-400 mt-1 mr-2 flex-shrink-0" />
-                <span>Get access to exclusive job postings</span>
-              </li>
-              <li className="flex items-start">
-                <MdVerified className="text-purple-400 mt-1 mr-2 flex-shrink-0" />
-                <span>Share interview experiences and tips</span>
-              </li>
-              <li className="flex items-start">
-                <MdVerified className="text-purple-400 mt-1 mr-2 flex-shrink-0" />
-                <span>Build your professional network</span>
-              </li>
-            </ul>
-          </div>
-
-          <div className="mt-8 text-center">
-            <p className="text-gray-300 italic">"Empowering students with career opportunities since 1960"</p>
-          </div>
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        {/* Logo */}
+        <div className="flex items-center justify-center mb-8 transform hover:scale-105 transition-transform duration-300">
+          <img 
+            src="/SATI/sati-logo.png" 
+            alt="logo" 
+            className="w-16 h-18 mr-3 drop-shadow-lg"
+          />
+          <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
+            SATI Job Junction
+          </h1>
         </div>
-      </div>
 
-      {/* Right Side - Auth Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
-        <div className="w-full max-w-md">
-          {/* Logo for mobile */}
-          <div className="lg:hidden flex items-center justify-center mb-8">
-            <img 
-              src="/SATI/sati-logo.png" 
-              alt="logo" 
-              className="w-12 h-14 mr-2"
-            />
-            <h1 className="text-3xl font-bold text-white">SATI Job Junction</h1>
+        {/* Auth Tabs */}
+        <div className="flex border-b border-gray-700/50 mb-8">
+          <button
+            className={`py-4 px-6 font-medium text-sm relative group ${
+              activeTab === 'signin' 
+                ? 'text-purple-400' 
+                : 'text-gray-400 hover:text-white'
+            }`}
+            onClick={() => {
+              setActiveTab('signin');
+              setApiError('');
+            }}
+          >
+            Sign In
+            {activeTab === 'signin' && (
+              <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-purple-400 to-pink-400 transform scale-x-100 transition-transform duration-300"></span>
+            )}
+          </button>
+          <button
+            className={`py-4 px-6 font-medium text-sm relative group ${
+              activeTab === 'signup' 
+                ? 'text-purple-400' 
+                : 'text-gray-400 hover:text-white'
+            }`}
+            onClick={() => {
+              setActiveTab('signup');
+              setApiError('');
+            }}
+          >
+            Sign Up
+            {activeTab === 'signup' && (
+              <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-purple-400 to-pink-400 transform scale-x-100 transition-transform duration-300"></span>
+            )}
+          </button>
+        </div>
+
+        {/* API Error Message */}
+        {apiError && (
+          <div className="mb-6 p-4 bg-red-900/50 backdrop-blur-sm text-red-200 rounded-lg text-sm border border-red-500/30">
+            {apiError}
           </div>
+        )}
 
-          {/* Auth Tabs */}
-          <div className="flex border-b border-gray-700 mb-6">
-            <button
-              className={`py-3 px-6 font-medium text-sm ${activeTab === 'signin' ? 'text-purple-400 border-b-2 border-purple-400' : 'text-gray-400 hover:text-white'}`}
-              onClick={() => {
-                setActiveTab('signin');
-                setApiError('');
-              }}
-            >
-              Sign In
-            </button>
-            <button
-              className={`py-3 px-6 font-medium text-sm ${activeTab === 'signup' ? 'text-purple-400 border-b-2 border-purple-400' : 'text-gray-400 hover:text-white'}`}
-              onClick={() => {
-                setActiveTab('signup');
-                setApiError('');
-              }}
-            >
-              Sign Up
-            </button>
-          </div>
-
-          {/* API Error Message */}
-          {apiError && (
-            <div className="mb-4 p-3 bg-red-900 bg-opacity-50 text-red-200 rounded-lg text-sm">
-              {apiError}
+        {/* Sign In Form */}
+        {activeTab === 'signin' && (
+          <form onSubmit={handleSubmit} className="space-y-6 backdrop-blur-sm bg-gray-800/30 p-8 rounded-xl border border-gray-700/30 shadow-2xl">
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
+                Email Address
+              </label>
+              <div className="relative group">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <FaEnvelope className="text-gray-500 group-hover:text-purple-400 transition-colors" />
+                </div>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className={`bg-gray-800/50 backdrop-blur-sm text-white w-full pl-10 pr-3 py-3 rounded-lg border ${
+                    errors.email ? 'border-red-500' : 'border-gray-700/50'
+                  } focus:outline-none focus:ring-2 focus:ring-purple-600/50 focus:border-transparent transition-all duration-300`}
+                  placeholder="student@sati.ac.in"
+                />
+              </div>
+              {errors.email && <p className="mt-2 text-sm text-red-400">{errors.email}</p>}
             </div>
-          )}
 
-          {/* Sign In Form */}
-          {activeTab === 'signin' && (
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
-                  Email Address
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-2">
+                Password
+              </label>
+              <div className="relative group">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <FaLock className="text-gray-500 group-hover:text-purple-400 transition-colors" />
+                </div>
+                <input
+                  type={showPassword ? "text" : "password"}
+                  id="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  className={`bg-gray-800/50 backdrop-blur-sm text-white w-full pl-10 pr-10 py-3 rounded-lg border ${
+                    errors.password ? 'border-red-500' : 'border-gray-700/50'
+                  } focus:outline-none focus:ring-2 focus:ring-purple-600/50 focus:border-transparent transition-all duration-300`}
+                  placeholder="••••••••"
+                />
+                <button
+                  type="button"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? (
+                    <FaEyeSlash className="text-gray-500 hover:text-purple-400 transition-colors" />
+                  ) : (
+                    <FaEye className="text-gray-500 hover:text-purple-400 transition-colors" />
+                  )}
+                </button>
+              </div>
+              {errors.password && <p className="mt-2 text-sm text-red-400">{errors.password}</p>}
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <input
+                  id="remember-me"
+                  name="remember-me"
+                  type="checkbox"
+                  className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-700 rounded bg-gray-800/50 backdrop-blur-sm"
+                />
+                <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-400 hover:text-white transition-colors">
+                  Remember me
                 </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <FaEnvelope className="text-gray-500" />
-                  </div>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    className={`bg-gray-800 text-white w-full pl-10 pr-3 py-3 rounded-lg border ${errors.email ? 'border-red-500' : 'border-gray-700'} focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent`}
-                    placeholder="student@sati.ac.in"
-                  />
-                </div>
-                {errors.email && <p className="mt-1 text-sm text-red-400">{errors.email}</p>}
               </div>
 
-              <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-2">
-                  Password
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <FaLock className="text-gray-500" />
-                  </div>
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    id="password"
-                    name="password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    className={`bg-gray-800 text-white w-full pl-10 pr-10 py-3 rounded-lg border ${errors.password ? 'border-red-500' : 'border-gray-700'} focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent`}
-                    placeholder="••••••••"
-                  />
-                  <button
-                    type="button"
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? (
-                      <FaEyeSlash className="text-gray-500 hover:text-gray-400" />
-                    ) : (
-                      <FaEye className="text-gray-500 hover:text-gray-400" />
-                    )}
-                  </button>
-                </div>
-                {errors.password && <p className="mt-1 text-sm text-red-400">{errors.password}</p>}
+              <div className="text-sm text-purple-400 hover:text-purple-300 cursor-pointer transition-colors">
+                Forgot password?
               </div>
+            </div>
 
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <input
-                    id="remember-me"
-                    name="remember-me"
-                    type="checkbox"
-                    className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-700 rounded bg-gray-800"
-                  />
-                  <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-400">
-                    Remember me
-                  </label>
-                </div>
-
-                <div className="text-sm text-purple-400 hover:text-purple-300 cursor-pointer">
-                  Forgot password?
-                </div>
-              </div>
-
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium py-3 px-4 rounded-lg transition duration-200 shadow-lg flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed"
-              >
-                {isLoading ? (
-                  <>
-                    <FaSpinner className="animate-spin mr-2" />
-                    Signing In...
-                  </>
-                ) : (
-                  'Sign In'
-                )}
-              </button>
-            </form>
-          )}
-
-          {/* Sign Up Form */}
-          {activeTab === 'signup' && (
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2">
-                  Full Name
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <FaUser className="text-gray-500" />
-                  </div>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    className={`bg-gray-800 text-white w-full pl-10 pr-3 py-3 rounded-lg border ${errors.name ? 'border-red-500' : 'border-gray-700'} focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent`}
-                    placeholder="John Doe"
-                  />
-                </div>
-                {errors.name && <p className="mt-1 text-sm text-red-400">{errors.name}</p>}
-              </div>
-
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
-                  College Email
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <FaEnvelope className="text-gray-500" />
-                  </div>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    className={`bg-gray-800 text-white w-full pl-10 pr-3 py-3 rounded-lg border ${errors.email ? 'border-red-500' : 'border-gray-700'} focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent`}
-                    placeholder="student@sati.ac.in"
-                  />
-                </div>
-                {errors.email && <p className="mt-1 text-sm text-red-400">{errors.email}</p>}
-              </div>
-
-              <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-2">
-                  Password
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <FaLock className="text-gray-500" />
-                  </div>
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    id="password"
-                    name="password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    className={`bg-gray-800 text-white w-full pl-10 pr-10 py-3 rounded-lg border ${errors.password ? 'border-red-500' : 'border-gray-700'} focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent`}
-                    placeholder="••••••••"
-                  />
-                  <button
-                    type="button"
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? (
-                      <FaEyeSlash className="text-gray-500 hover:text-gray-400" />
-                    ) : (
-                      <FaEye className="text-gray-500 hover:text-gray-400" />
-                    )}
-                  </button>
-                </div>
-                {errors.password && <p className="mt-1 text-sm text-red-400">{errors.password}</p>}
-              </div>
-
-              <div>
-                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-300 mb-2">
-                  Confirm Password
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <FaLock className="text-gray-500" />
-                  </div>
-                  <input
-                    type={showConfirmPassword ? "text" : "password"}
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                    className={`bg-gray-800 text-white w-full pl-10 pr-10 py-3 rounded-lg border ${errors.confirmPassword ? 'border-red-500' : 'border-gray-700'} focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent`}
-                    placeholder="••••••••"
-                  />
-                  <button
-                    type="button"
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  >
-                    {showConfirmPassword ? (
-                      <FaEyeSlash className="text-gray-500 hover:text-gray-400" />
-                    ) : (
-                      <FaEye className="text-gray-500 hover:text-gray-400" />
-                    )}
-                  </button>
-                </div>
-                {errors.confirmPassword && <p className="mt-1 text-sm text-red-400">{errors.confirmPassword}</p>}
-              </div>
-
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium py-3 px-4 rounded-lg transition duration-200 shadow-lg flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed"
-              >
-                {isLoading ? (
-                  <>
-                    <FaSpinner className="animate-spin mr-2" />
-                    Creating Account...
-                  </>
-                ) : (
-                  'Create Account'
-                )}
-              </button>
-            </form>
-          )}
-
-          <div className="mt-6 text-center">
-            <p className="text-gray-500 text-sm">
-              {activeTab === 'signin' ? (
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-medium py-3 px-4 rounded-lg transition-all duration-300 shadow-lg hover:shadow-purple-500/20 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
+              {isLoading ? (
                 <>
-                  Don't have an account?{' '}
-                  <button 
-                    onClick={() => setActiveTab('signup')} 
-                    className="text-purple-400 hover:text-purple-300 font-medium"
-                  >
-                    Sign up
-                  </button>
+                  <FaSpinner className="animate-spin" />
+                  Signing In...
                 </>
               ) : (
-                <>
-                  Already have an account?{' '}
-                  <button 
-                    onClick={() => setActiveTab('signin')} 
-                    className="text-purple-400 hover:text-purple-300 font-medium"
-                  >
-                    Sign in
-                  </button>
-                </>
+                'Sign In'
               )}
-            </p>
-          </div>
+            </button>
+          </form>
+        )}
+
+        {/* Sign Up Form */}
+        {activeTab === 'signup' && (
+          <form onSubmit={handleSubmit} className="space-y-6 backdrop-blur-sm bg-gray-800/30 p-8 rounded-xl border border-gray-700/30 shadow-2xl">
+            <div>
+              <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2">
+                Full Name
+              </label>
+              <div className="relative group">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <FaUser className="text-gray-500 group-hover:text-purple-400 transition-colors" />
+                </div>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  className={`bg-gray-800/50 backdrop-blur-sm text-white w-full pl-10 pr-3 py-3 rounded-lg border ${
+                    errors.name ? 'border-red-500' : 'border-gray-700/50'
+                  } focus:outline-none focus:ring-2 focus:ring-purple-600/50 focus:border-transparent transition-all duration-300`}
+                  placeholder="John Doe"
+                />
+              </div>
+              {errors.name && <p className="mt-2 text-sm text-red-400">{errors.name}</p>}
+            </div>
+
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
+                College Email
+              </label>
+              <div className="relative group">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <FaEnvelope className="text-gray-500 group-hover:text-purple-400 transition-colors" />
+                </div>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className={`bg-gray-800/50 backdrop-blur-sm text-white w-full pl-10 pr-3 py-3 rounded-lg border ${
+                    errors.email ? 'border-red-500' : 'border-gray-700/50'
+                  } focus:outline-none focus:ring-2 focus:ring-purple-600/50 focus:border-transparent transition-all duration-300`}
+                  placeholder="student@sati.ac.in"
+                />
+              </div>
+              {errors.email && <p className="mt-2 text-sm text-red-400">{errors.email}</p>}
+            </div>
+
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-2">
+                Password
+              </label>
+              <div className="relative group">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <FaLock className="text-gray-500 group-hover:text-purple-400 transition-colors" />
+                </div>
+                <input
+                  type={showPassword ? "text" : "password"}
+                  id="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  className={`bg-gray-800/50 backdrop-blur-sm text-white w-full pl-10 pr-10 py-3 rounded-lg border ${
+                    errors.password ? 'border-red-500' : 'border-gray-700/50'
+                  } focus:outline-none focus:ring-2 focus:ring-purple-600/50 focus:border-transparent transition-all duration-300`}
+                  placeholder="••••••••"
+                />
+                <button
+                  type="button"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? (
+                    <FaEyeSlash className="text-gray-500 hover:text-purple-400 transition-colors" />
+                  ) : (
+                    <FaEye className="text-gray-500 hover:text-purple-400 transition-colors" />
+                  )}
+                </button>
+              </div>
+              {errors.password && <p className="mt-2 text-sm text-red-400">{errors.password}</p>}
+            </div>
+
+            <div>
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-300 mb-2">
+                Confirm Password
+              </label>
+              <div className="relative group">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <FaLock className="text-gray-500 group-hover:text-purple-400 transition-colors" />
+                </div>
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  className={`bg-gray-800/50 backdrop-blur-sm text-white w-full pl-10 pr-10 py-3 rounded-lg border ${
+                    errors.confirmPassword ? 'border-red-500' : 'border-gray-700/50'
+                  } focus:outline-none focus:ring-2 focus:ring-purple-600/50 focus:border-transparent transition-all duration-300`}
+                  placeholder="••••••••"
+                />
+                <button
+                  type="button"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                >
+                  {showConfirmPassword ? (
+                    <FaEyeSlash className="text-gray-500 hover:text-purple-400 transition-colors" />
+                  ) : (
+                    <FaEye className="text-gray-500 hover:text-purple-400 transition-colors" />
+                  )}
+                </button>
+              </div>
+              {errors.confirmPassword && <p className="mt-2 text-sm text-red-400">{errors.confirmPassword}</p>}
+            </div>
+
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-medium py-3 px-4 rounded-lg transition-all duration-300 shadow-lg hover:shadow-purple-500/20 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
+              {isLoading ? (
+                <>
+                  <FaSpinner className="animate-spin" />
+                  Creating Account...
+                </>
+              ) : (
+                'Create Account'
+              )}
+            </button>
+          </form>
+        )}
+
+        <div className="mt-8 text-center">
+          <p className="text-gray-500 text-sm">
+            {activeTab === 'signin' ? (
+              <>
+                Don't have an account?{' '}
+                <button 
+                  onClick={() => setActiveTab('signup')} 
+                  className="text-purple-400 hover:text-purple-300 font-medium transition-colors"
+                >
+                  Sign up
+                </button>
+              </>
+            ) : (
+              <>
+                Already have an account?{' '}
+                <button 
+                  onClick={() => setActiveTab('signin')} 
+                  className="text-purple-400 hover:text-purple-300 font-medium transition-colors"
+                >
+                  Sign in
+                </button>
+              </>
+            )}
+          </p>
         </div>
       </div>
     </div>

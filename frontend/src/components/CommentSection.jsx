@@ -204,7 +204,7 @@ const CommentSection = ({ postId, postAuthorId }) => {
   };
 
   // Render comment
-  const renderComment = (comment, isReply = false) => {
+  const renderComment = (comment, isReply = false, level = 0) => {
     if (!comment?.user?._id) return null;
 
     const isOwner = currentUser?._id === comment.user._id;
@@ -216,29 +216,26 @@ const CommentSection = ({ postId, postAuthorId }) => {
     return (
       <div 
         key={comment._id}
-        className={`mt-4 ${isReply ? 'ml-10 pl-3 border-l-2 border-gray-700' : ''} ${
-          isAdmin ? 'bg-gray-800/50 p-3 rounded-lg' : ''
-        }`}
+        className={`${isReply ? `ml-10 border-l-2 border-purple-400 mt-4 pl-4 ` : 'border-b border-gray-700/50 p-2 '}`}
       >
         <div className="flex gap-3">
-          <div>
+          <div className="flex flex-col items-center">
             <Avatar 
               user={comment.user}
-              className="w-8 h-8 text-sm"
+              className="w-10 h-10 text-sm"
             />
           </div>
-
-          <div className="flex-1 min-w-0">
-            <div className="flex gap-2 items-center flex-wrap">
+          <div className="flex-1">
+            <div className="flex items-center gap-2">
               <span className={`font-medium ${
-                isAdmin ? 'text-purple-300' : 'text-gray-200'
-              } truncate`}>
+                isAdmin ? 'text-purple-400' : 'text-white'
+              }`}>
                 {comment.user.name || comment.user.email.split('@')[0]}
               </span>
               {comment.user.isVerified && (
                 <MdVerified className="text-purple-400 flex-shrink-0" />
               )}
-              <span className="text-xs text-gray-500 whitespace-nowrap">
+              <span className="text-xs text-gray-400">
                 {timeAgo(comment.createdAt)}
               </span>
             </div>
@@ -248,20 +245,20 @@ const CommentSection = ({ postId, postAuthorId }) => {
                 <textarea
                   value={editContent}
                   onChange={(e) => setEditContent(e.target.value)}
-                  className="w-full bg-gray-700 text-white rounded p-2 text-sm"
+                  className="w-full bg-transparent text-white border-b border-gray-700/50 p-2 text-sm focus:outline-none focus:border-purple-500"
                   autoFocus
                   rows="3"
                 />
                 <div className="flex gap-2 mt-2">
                   <button
                     onClick={handleEdit}
-                    className="px-3 py-1 bg-purple-600 text-white rounded text-sm"
+                    className="text-purple-400 hover:text-purple-300 text-sm transition-colors"
                   >
                     Save
                   </button>
                   <button
                     onClick={() => setEditingId(null)}
-                    className="px-3 py-1 bg-gray-600 text-white rounded text-sm"
+                    className="text-gray-400 hover:text-gray-300 text-sm transition-colors"
                   >
                     Cancel
                   </button>
@@ -273,17 +270,17 @@ const CommentSection = ({ postId, postAuthorId }) => {
                   {comment.content}
                 </p>
 
-                <div className="flex gap-4 mt-2">
+                <div className="flex items-center gap-4 mt-2">
                   <button
                     onClick={() => {
                       setReplyingTo(replyingTo === comment._id ? null : comment._id);
                       setEditingId(null);
                     }}
-                    className={`flex items-center gap-1 text-xs ${
+                    className={`flex items-center gap-1 text-sm ${
                       replyingTo === comment._id 
                         ? 'text-purple-400' 
-                        : 'text-gray-400 hover:text-purple-400'
-                    }`}
+                        : 'text-gray-400 hover:text-white'
+                    } transition-colors`}
                   >
                     <MdReply /> Reply
                   </button>
@@ -297,14 +294,14 @@ const CommentSection = ({ postId, postAuthorId }) => {
                             setEditContent(comment.content);
                             setReplyingTo(null);
                           }}
-                          className="flex items-center gap-1 text-xs text-gray-400 hover:text-blue-400"
+                          className="flex items-center gap-1 text-sm text-gray-400 hover:text-white transition-colors"
                         >
                           <MdEdit /> Edit
                         </button>
                       )}
                       <button
                         onClick={() => handleDelete(comment._id)}
-                        className="flex items-center gap-1 text-xs text-gray-400 hover:text-red-400"
+                        className="flex items-center gap-1 text-sm text-gray-400 hover:text-red-400 transition-colors"
                       >
                         <MdDelete /> Delete
                       </button>
@@ -314,7 +311,7 @@ const CommentSection = ({ postId, postAuthorId }) => {
                   {hasReplies && (
                     <button
                       onClick={() => toggleReplies(comment._id)}
-                      className="flex items-center gap-1 text-xs text-gray-400 hover:text-white"
+                      className="flex items-center gap-1 text-sm text-gray-400 hover:text-white transition-colors"
                     >
                       {repliesExpanded ? <MdExpandLess /> : <MdExpandMore />}
                       {comment.replies.length} {comment.replies.length === 1 ? 'reply' : 'replies'}
@@ -326,29 +323,37 @@ const CommentSection = ({ postId, postAuthorId }) => {
 
             {/* Reply form */}
             {replyingTo === comment._id && (
-              <form onSubmit={handleSubmit} className="mt-3">
-                <textarea
-                  value={newComment}
-                  onChange={(e) => setNewComment(e.target.value)}
-                  placeholder={`Replying to ${comment.user.name}...`}
-                  className="w-full bg-gray-700 text-white rounded p-2 text-sm"
-                  rows="2"
-                  autoFocus
-                />
-                <div className="flex gap-2 mt-2">
-                  <button
-                    type="submit"
-                    className="px-3 py-1 bg-purple-600 text-white rounded text-sm"
-                  >
-                    Post Reply
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setReplyingTo(null)}
-                    className="px-3 py-1 bg-gray-600 text-white rounded text-sm"
-                  >
-                    Cancel
-                  </button>
+              <form onSubmit={handleSubmit} className="mt-4">
+                <div className="flex gap-3">
+                  <Avatar 
+                    user={currentUser}
+                    className="w-10 h-10 text-sm"
+                  />
+                  <div className="flex-1">
+                    <textarea
+                      value={newComment}
+                      onChange={(e) => setNewComment(e.target.value)}
+                      placeholder={`Replying to ${comment.user.name}...`}
+                      className="w-full bg-transparent text-white border-b border-gray-700/50 p-2 text-sm focus:outline-none focus:border-purple-500"
+                      rows="2"
+                      autoFocus
+                    />
+                    <div className="flex justify-end items-center mt-2">
+                      <button
+                        type="button"
+                        onClick={() => setReplyingTo(null)}
+                        className="text-gray-400 hover:text-gray-300 text-sm transition-colors mr-2"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        className="text-purple-400 hover:text-purple-300 text-sm transition-colors"
+                      >
+                        Post Reply
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </form>
             )}
@@ -358,7 +363,7 @@ const CommentSection = ({ postId, postAuthorId }) => {
         {/* Render replies if expanded */}
         {hasReplies && repliesExpanded && (
           <div className="mt-3 space-y-3">
-            {comment.replies.map(reply => renderComment(reply, true))}
+            {comment.replies.map(reply => renderComment(reply, true, level + 1))}
           </div>
         )}
       </div>
@@ -373,51 +378,56 @@ const CommentSection = ({ postId, postAuthorId }) => {
   };
 
   return (
-    <section className="mt-4 border-t border-gray-700 pt-6">
-      <h3 className="text-xl font-semibold text-white mb-6">
-        Discussion ({countTotalComments()})
-      </h3>
+    <section className="mt-4 border-t border-gray-700/30 pt-6">
+      <div className="flex items-center justify-between mb-6">
+        <h3 className="text-xl font-semibold text-white">
+          Discussion ({countTotalComments()})
+        </h3>
+        <div className="flex items-center gap-2 text-sm text-gray-400">
+          <span>Sort by</span>
+          <button className="text-white hover:text-purple-400 transition-colors">
+            Most relevant
+          </button>
+        </div>
+      </div>
 
       {error && (
-        <div className="mb-4 p-2 bg-red-900/30 text-red-300 rounded text-sm flex justify-between items-center">
+        <div className="mb-4 p-3 bg-red-900/30 text-red-300 rounded-lg text-sm flex justify-between items-center">
           <span>{error}</span>
-          <button onClick={() => setError('')}>
+          <button onClick={() => setError('')} className="hover:text-red-200">
             <MdClose />
           </button>
         </div>
       )}
 
       <form onSubmit={handleSubmit} className="mb-8">
-        <textarea
-          value={newComment}
-          onChange={(e) => setNewComment(e.target.value)}
-          placeholder="Share your thoughts about this interview..."
-          className="w-full bg-gray-700 text-white rounded-lg p-3 focus:ring-2 focus:ring-purple-500 focus:outline-none"
-          rows="3"
-        />
-        <div className="flex justify-between items-center mt-2">
-          <button
-            type="submit"
-            disabled={!newComment.trim()}
-            className={`px-4 py-2 rounded transition ${
-              newComment.trim()
-                ? 'bg-purple-600 hover:bg-purple-700 text-white'
-                : 'bg-gray-600 text-gray-400 cursor-not-allowed'
-            }`}
-          >
-            Post Comment
-          </button>
-          {replyingTo && (
-            <div className="flex items-center text-sm text-gray-400">
-              <span>Replying to comment</span>
+        <div className="flex gap-3">
+          <Avatar 
+            user={currentUser}
+            className="w-10 h-10 text-sm"
+          />
+          <div className="flex-1">
+            <textarea
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              placeholder="Share your thoughts about this interview..."
+              className="w-full bg-gray-800/50 text-white rounded-lg p-3 focus:outline-none focus:ring-1 focus:ring-purple-500 border border-gray-700/50"
+              rows="3"
+            />
+            <div className="flex justify-end items-center mt-3">
               <button
-                onClick={() => setReplyingTo(null)}
-                className="ml-2 text-gray-500 hover:text-white"
+                type="submit"
+                disabled={!newComment.trim()}
+                className={`px-4 py-2 rounded-lg transition-colors ${
+                  newComment.trim()
+                    ? 'bg-purple-600 hover:bg-purple-700 text-white'
+                    : 'bg-gray-700/50 text-gray-400 cursor-not-allowed'
+                }`}
               >
-                <MdClose size={18} />
+                Post Comment
               </button>
             </div>
-          )}
+          </div>
         </div>
       </form>
 
@@ -425,7 +435,7 @@ const CommentSection = ({ postId, postAuthorId }) => {
         <div className="space-y-4">
           {[...Array(3)].map((_, i) => (
             <div key={i} className="flex gap-3">
-              <div className="w-8 h-8 bg-gray-700 rounded-full animate-pulse" />
+              <div className="w-10 h-10 bg-gray-700 rounded-full animate-pulse" />
               <div className="flex-1">
                 <div className="h-4 w-1/3 bg-gray-700 rounded animate-pulse mb-2" />
                 <div className="h-3 w-full bg-gray-700 rounded animate-pulse mb-1" />
