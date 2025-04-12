@@ -22,13 +22,13 @@ const userSchema = new mongoose.Schema({
     }, 
     otp: String,
     otpExpires: Date,
-    recentSearches: {
-        type: Array,
-        default: []
-    },
     avatar:{
         type: String
-    }
+    },
+    savedItems: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Post'
+    }]
 }, {timestamps: true});
 
 userSchema.pre('save', async function(next){

@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { FaSearch, FaPlus } from "react-icons/fa";
+import { FaSearch, FaPlus, FaBookmark } from "react-icons/fa";
 import { MdVerifiedUser } from "react-icons/md";
 import axios from "axios";
 import Avatar from "./Avatar";
+import { useNavigate } from "react-router-dom";
 
 const Sidebar = ({ onSearch, onAddExperience, onVerifyRequest }) => {
   const [user, setUser] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [recentSearches, setRecentSearches] = useState(localStorage.getItem("recentSearches") || []);
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleAvatarChange = (updatedUser) => {
     setUser(updatedUser);
@@ -155,18 +157,34 @@ const Sidebar = ({ onSearch, onAddExperience, onVerifyRequest }) => {
         )}
       </div>
 
-      {/* Add Experience Button */}
-      <div className="mt-4">
+      {/* Action Buttons */}
+      <div className="space-y-3 mt-4">
         <button
           onClick={onAddExperience}
           className="w-full bg-gradient-to-r from-purple-600 to-purple-700 text-white 
                    py-3 px-4 rounded-lg hover:from-purple-500 hover:to-purple-600 
                    transform transition-all duration-300 hover:scale-105 hover:shadow-lg 
                    hover:shadow-purple-500/20 flex items-center justify-center gap-2
-                   border border-purple-500/30"
+                   border border-purple-500/30 group"
         >
-          <FaPlus className="text-lg" />
+          <FaPlus className="text-lg transform group-hover:rotate-90 transition-transform duration-300" />
           Add Your Experience
+        </button>
+
+        <button
+          onClick={() => navigate('/saved-items')}
+          className="w-full bg-gradient-to-r from-gray-800 to-gray-700 text-white 
+                   py-3 px-4 rounded-lg hover:from-gray-700 hover:to-gray-600 
+                   transform transition-all duration-300 hover:scale-105 hover:shadow-lg 
+                   hover:shadow-purple-500/10 flex items-center justify-center gap-2
+                   border border-gray-600/30 group relative overflow-hidden"
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-pink-500/10 
+                         transform group-hover:scale-110 transition-transform duration-500"></div>
+          <FaBookmark className="text-lg transform group-hover:scale-110 transition-transform duration-300 text-purple-400" />
+          <span className="relative text-gray-300">Saved Items</span>
+          <div className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-purple-500/30 to-pink-500/30 
+                         transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></div>
         </button>
       </div>
     </div>

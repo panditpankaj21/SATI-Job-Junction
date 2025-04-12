@@ -3,6 +3,7 @@ import AuthLayout from "./pages/AuthLayout";
 import ProtectRoute from "./components/ProtectRoute";
 import Home from "./pages/Home";
 import InterviewExperienceDetail from "./components/InterviewExperienceDetail"
+import SavedItems from "./components/SavedItems";
 
 function App() {
   return (
@@ -15,6 +16,14 @@ function App() {
           element={
             <ProtectRoute>
               <Home />
+            </ProtectRoute>
+          } 
+        />
+        <Route 
+          path="/saved-items" 
+          element={
+            <ProtectRoute>
+                <SavedItems />
             </ProtectRoute>
           } 
         />

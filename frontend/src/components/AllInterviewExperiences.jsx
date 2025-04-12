@@ -6,6 +6,8 @@ import { MdOutlineEdit } from "react-icons/md";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
 import { BiUpvote, BiSolidUpvote } from "react-icons/bi";
+import { GoBookmark } from "react-icons/go";
+import { GoBookmarkFill } from "react-icons/go";
 
 const AllInterviewExperiences = ({
   searchQuery,
@@ -35,6 +37,7 @@ const AllInterviewExperiences = ({
           Authorization: `Bearer ${localStorage.getItem('token')}`
         }
       })
+      console.log(res.data.user);
       setCurrentUser(res.data.user);
     } catch (error){
       console.error('Error fetching current user: ', error);
@@ -124,6 +127,17 @@ const AllInterviewExperiences = ({
 
   const handlePrevPage = () => {
     if(currentPage > 1) setCurrentPage(prev => prev - 1);
+  }
+
+  const handleSave = async (postId) => {
+    try{
+      await axios.post(`${import.meta.env.VITE_BACKEND_URI}/api/v1/users/save-item`, {postId}, {
+        headers: {Authorization: `Bearer ${localStorage.getItem('token')}`}
+      })
+      fetchCurrentUser();
+    } catch (error){
+      console.error('Error saving post: ', error);
+    }
   }
 
   const convertDate = (d) => {
@@ -317,6 +331,15 @@ const AllInterviewExperiences = ({
                 <span className="text-gray-300 group-hover:text-purple-400 transition-colors">
                   {exp.commentCount}
                 </span>
+              </div>
+              <div
+                className="flex items-center justify-center gap-1 cursor-pointer group"
+                onClick={() => handleSave(exp._id)}
+              >
+                {currentUser.savedItems.includes(exp._id) ? 
+                  <GoBookmarkFill className="text-purple-400 text-xl group-hover:text-purple-400 transform group-hover:scale-110 transition-all duration-300"/> :
+                  <GoBookmark className="text-gray-400 text-xl group-hover:text-purple-400 transform group-hover:scale-110 transition-all duration-300"/>
+                }
               </div>
             </div>
           </div>

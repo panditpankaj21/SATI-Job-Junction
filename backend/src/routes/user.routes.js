@@ -6,7 +6,10 @@ const {
     getCurrentUser,
     sendOTP,
     verifyOTP,
-    uploadAvatar
+    uploadAvatar,
+    saveItem,
+    getSavedItems,
+    unsaveItem
 } = require('../controllers/user.controller');
 const verifyJWT = require('../middlewares/auth.middleware');
 const upload= require('../middlewares/upload.middleware')
@@ -17,5 +20,8 @@ router.route('/me').get(verifyJWT, getCurrentUser);
 router.route('/send-otp').post(verifyJWT, sendOTP);
 router.route('/verify-otp').post(verifyJWT, verifyOTP);
 router.route('/avatar').patch(verifyJWT, upload.single('avatar'), uploadAvatar)
+router.route('/save-item').post(verifyJWT, saveItem)
+router.route('/get-saved-items').get(verifyJWT, getSavedItems)
+router.route('/unsave-item/:postId').delete(verifyJWT, unsaveItem)
 
 module.exports = router;

@@ -3,6 +3,7 @@ const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 const {cloudinary} = require('../config/cloudinary')
 const fs = require('fs')
+const Post = require('../models/post.model')
 
 const registerUser = async (req, res) => {
     const {name, email, password} = req.body;
@@ -175,6 +176,51 @@ const uploadAvatar = async (req, res) => {
     }
   };
 
+  const saveItem = async (req, res) => {
+    const { postId } = req.body;
+    const user = req.user;
+    if(!postId){
+        return res.status(400).json({message: 'Post ID is required'});
+    }
+    if(user.savedItems.includes(postId)){
+      user.savedItems = user.savedItems.filter(item => item.toString() !== postId);
+    } else {
+      user.savedItems.push(postId);
+    }
+    await user.save();
+    res.status(200).json({message: 'Post saved successfully'});
+  }
+
+  const getSavedItems = async (req, res) => {
+    try {
+      const user = req.user;
+  
+      const userDoc = await User.findById(user._id).select('savedItems');
+      const savedItemIds = userDoc.savedItems;
+  
+      const posts = await Post.find({ _id: { $in: savedItemIds } });
+  
+      res.status(200).json({ posts });
+    } catch (error) {
+      console.error('Error getting saved items: ', error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  };
+
+  const unsaveItem = async (req, res) => {
+    try {
+      console.log(req.params);
+      const { postId } = req.params;
+      const user = req.user;
+      user.savedItems = user.savedItems.filter(item => item.toString() !== postId);
+      await user.save();
+      res.status(200).json({message: 'Post unsaved successfully'});
+    } catch (error) {
+      console.error('Error unsaving item: ', error);
+      res.status(500).json({message: 'Internal server error'});
+    }
+  }
+
 
 module.exports = {
     registerUser,
@@ -182,5 +228,8 @@ module.exports = {
     getCurrentUser,
     sendOTP,
     verifyOTP,
-    uploadAvatar
+    uploadAvatar,
+    saveItem,
+    getSavedItems,
+    unsaveItem
 };
