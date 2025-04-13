@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { BiUpvote, BiSolidUpvote } from "react-icons/bi";
 import { GoBookmark } from "react-icons/go";
 import { GoBookmarkFill } from "react-icons/go";
+import { FiBarChart2 } from "react-icons/fi";
 
 const AllInterviewExperiences = ({
   searchQuery,
@@ -137,6 +138,21 @@ const AllInterviewExperiences = ({
       fetchCurrentUser();
     } catch (error){
       console.error('Error saving post: ', error);
+    }
+  }
+
+  const handleUpdateViews = async (postId) => {
+    try{
+      await axios.patch(`${import.meta.env.VITE_BACKEND_URI}/api/v1/posts/update-views/${postId}`, {}, {
+        headers:{
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      })
+
+      navigate(`/post/${postId}`);
+
+    } catch(error){
+      console.log('client: Error While updating views: ', error);
     }
   }
 
@@ -282,7 +298,7 @@ const AllInterviewExperiences = ({
               <div className="w-full">
                 <h3
                   className="text-xl font-bold cursor-pointer text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 mb-1 hover:from-purple-300 hover:to-pink-300 transition-all duration-300"
-                  onClick={() => navigate(`/post/${exp._id}`)}
+                  onClick={() => handleUpdateViews(exp._id)}
                 >
                   {exp.title}
                 </h3>
@@ -310,25 +326,25 @@ const AllInterviewExperiences = ({
               dangerouslySetInnerHTML={{ __html: truncateText(exp.content, 100) }}
             />
     
-            <div className="mt-5 flex items-center gap-5">
+            <div className="mt-5 flex items-center gap-4">
               <div 
-                className="flex items-center justify-center gap-1 cursor-pointer group"
+                className="flex items-center gap-1 cursor-pointer group"
                 onClick={() => handleUpvote(exp._id)}
               >
                 {exp.upvotedBy?.includes(currentUser._id) ? 
-                  <BiSolidUpvote className="text-purple-400 text-xl group-hover:text-purple-300 transform group-hover:scale-110 transition-all duration-300"/> :  
-                  <BiUpvote className="text-gray-400 group-hover:text-purple-400 text-xl transform group-hover:scale-110 transition-all duration-300" />
+                  <BiSolidUpvote className="text-purple-400 text-xl transform hover:scale-120 transition-all duration-300"/> :  
+                  <BiUpvote className="text-gray-400 text-xl transform hover:scale-120 transition-all duration-300" />
                 }
-                <span className="text-gray-300 group-hover:text-purple-400 transition-colors">
+                <span className="text-gray-300 transition-colors">
                   {exp.upvotes || 0}
                 </span>
               </div>
               <div 
-                className="flex items-center justify-center gap-1 cursor-pointer group"
-                onClick={() => navigate(`/post/${exp._id}`)}
+                className="flex items-center justify-center gap-2 group"
+                onClick={() => handleUpdateViews(exp._id)}
               >
-                <FaRegComment className="text-gray-400 group-hover:text-purple-400 text-xl transform group-hover:scale-110 transition-all duration-300" />
-                <span className="text-gray-300 group-hover:text-purple-400 transition-colors">
+                <FaRegComment className="text-gray-400 text-xl transform hover:scale-120 transition-all duration-300" />
+                <span className="text-gray-300 transition-colors">
                   {exp.commentCount}
                 </span>
               </div>
@@ -337,9 +353,18 @@ const AllInterviewExperiences = ({
                 onClick={() => handleSave(exp._id)}
               >
                 {currentUser.savedItems.includes(exp._id) ? 
-                  <GoBookmarkFill className="text-purple-400 text-xl group-hover:text-purple-400 transform group-hover:scale-110 transition-all duration-300"/> :
-                  <GoBookmark className="text-gray-400 text-xl group-hover:text-purple-400 transform group-hover:scale-110 transition-all duration-300"/>
+                  <GoBookmarkFill className="text-purple-400 text-xl transform hover:scale-120 transition-all duration-300"/> :
+                  <GoBookmark className="text-gray-400 text-xl transform hover:scale-120 transition-all duration-300"/>
                 }
+              </div>
+
+              <div 
+                className="flex items-center justify-center gap-1 group"
+              >
+                <FiBarChart2 className="text-gray-400 text-xl transform hover:scale-120 transition-all duration-300"/>
+                <span className="text-gray-300 transition-colors">
+                  {exp.views || 0}
+                </span>
               </div>
             </div>
           </div>
