@@ -25,7 +25,11 @@ const postSchema = new mongoose.Schema({
     upvotedBy: [{
             type: mongoose.Schema.Types.ObjectId,
             ref: User
-    }]
+    }],
+    views: {
+        type: Number,
+        default: 0,
+    }
 }, {timestamps: true});
 
 const Post = mongoose.model('Post', postSchema);

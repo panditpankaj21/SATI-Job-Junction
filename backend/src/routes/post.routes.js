@@ -7,7 +7,8 @@ const {
     updatePost, 
     deletePost,
     upvotePost,
-    getUpvoteStatus
+    getUpvoteStatus,
+    updateViews
 } = require('../controllers/post.controller');
 
 router.route('/').get(allPosts);
@@ -17,5 +18,6 @@ router.route('/:id').delete(deletePost);
 router.route('/update/:id').post(updatePost);
 router.route('/:id/upvote').post(upvotePost);
 router.route('/:id/upvote-status').get(getUpvoteStatus);
+router.route('/update-views/:postId').patch(updateViews)
 
 module.exports = router;

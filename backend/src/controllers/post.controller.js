@@ -175,6 +175,32 @@ const getUpvoteStatus = async (req, res) => {
     }
 };
 
+/****************** Views ***********************/
+const updateViews = async (req, res) => {
+    try{
+        const { postId } = req.params;
+        const post = await Post.findById(postId);
+        if(!post){
+            return res.status(404).json({
+                message: 'Post not Found'
+            })
+        }
+
+        post.views = (post.views || 0) + 1;
+        await post.save();
+
+        res.status(200).json({
+            message: 'views updated successfully',
+            views: post.views,
+        })
+
+    } catch (error){
+        res.status(500).json({
+            message: 'Server Error while updating views'
+        })
+    }
+}
+
 module.exports = { 
     allPosts,
     getPost,
@@ -182,5 +208,6 @@ module.exports = {
     updatePost, 
     deletePost,
     upvotePost,
-    getUpvoteStatus
+    getUpvoteStatus,
+    updateViews
 };

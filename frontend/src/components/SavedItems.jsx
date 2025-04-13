@@ -43,6 +43,21 @@ function SavedItems() {
         }
     };
 
+    const handleUpdateViews = async (postId) => {
+        try{
+          await axios.patch(`${import.meta.env.VITE_BACKEND_URI}/api/v1/posts/update-views/${postId}`, {}, {
+            headers:{
+              Authorization: `Bearer ${localStorage.getItem('token')}`
+            }
+          })
+    
+          navigate(`/post/${postId}`);
+    
+        } catch(error){
+          console.log('client: Error While updating views: ', error);
+        }
+    }
+
     useEffect(() => {
         fetchSavedItems();
     }, []);
@@ -137,7 +152,7 @@ function SavedItems() {
                                             <div className="mb-4">
                                                 <h3
                                                     className="text-xl font-bold cursor-pointer text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 mb-2 hover:from-purple-300 hover:to-pink-300 transition-all duration-300"
-                                                    onClick={() => navigate(`/post/${post._id}`)}
+                                                    onClick={() => handleUpdateViews(post._id)}
                                                 >
                                                     {post.title}
                                                 </h3>
