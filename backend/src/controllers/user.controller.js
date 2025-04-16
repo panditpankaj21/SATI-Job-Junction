@@ -219,7 +219,30 @@ const uploadAvatar = async (req, res) => {
       console.error('Error unsaving item: ', error);
       res.status(500).json({message: 'Internal server error'});
     }
-  }
+}
+
+const addRecentSearch = async (req, res) => {
+  const { search } = req.body;
+  const user = req.user;
+
+  user.recentSearches = user.recentSearches.filter(item => item !== search);
+
+  user.recentSearches.unshift(search);
+
+  user.recentSearches = user.recentSearches.slice(0, 5);
+
+  await user.save();
+
+  res.status(200).json({ 
+    message: 'Recent search added successfully',
+    searches: user.recentSearches
+  });
+};
+
+const getRecentSearches = async (req, res) => {
+  const user = req.user;
+  res.status(200).json({searches: user.recentSearches});
+}
 
 
 module.exports = {
@@ -231,5 +254,7 @@ module.exports = {
     uploadAvatar,
     saveItem,
     getSavedItems,
-    unsaveItem
+    unsaveItem,
+    addRecentSearch,
+    getRecentSearches
 };

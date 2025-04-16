@@ -62,6 +62,14 @@ const getPost = async (req, res) => {
         if (!post) return res.status(404).json({ message: 'Post not found' });
 
         const commentCount = await Comment.countDocuments({ post: post._id });
+        const user = req.user;
+        if(user){
+            //posts should not be repeated
+            if(!user.postsViewed.includes(post._id)){
+                user.postsViewed.push(post._id);
+                await user.save();
+            }
+        }   
 
         res.status(200).json({
             ...post.toObject(),
