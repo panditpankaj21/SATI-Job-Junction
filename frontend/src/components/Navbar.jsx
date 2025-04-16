@@ -91,7 +91,7 @@ const Navbar = () => {
 
       {/* Mobile Menu - appears when hamburger is clicked */}
       {isMenuOpen && (
-        <div className="md:hidden bg-gradient-to-b from-gray-800 to-gray-900 transform transition-all duration-300 ease-in-out">
+        <div className="md:hidden bg-gradient-to-b from-gray-800 mt-5 to-gray-900 transform transition-all duration-300 ease-in-out">
           <ul className="flex flex-col space-y-4 p-4">
             <li className="group">
               <a

@@ -8,6 +8,8 @@ import Footer from "./Footer";
 import { BiUpvote, BiSolidUpvote } from "react-icons/bi";
 import { FaRegComment } from "react-icons/fa";
 import { motion } from "framer-motion";
+import { GoBookmark } from "react-icons/go";
+import { GoBookmarkFill } from "react-icons/go";
 
 const InterviewExperienceDetail = () => {
   const { id } = useParams();
@@ -81,7 +83,6 @@ const InterviewExperienceDetail = () => {
           Authorization: `Bearer ${localStorage.getItem('token')}`
         }
       });
-      console.log(res.data)
       setExperience(res.data);
     } catch (error) {
       console.error('Error fetching experience: ', error);
@@ -99,6 +100,17 @@ const InterviewExperienceDetail = () => {
       year: "numeric" 
     });
   };
+
+  const handleSave = async (postId) => {
+    try{
+      await axios.post(`${import.meta.env.VITE_BACKEND_URI}/api/v1/users/save-item`, {postId}, {
+        headers: {Authorization: `Bearer ${localStorage.getItem('token')}`}
+      })
+      fetchCurrentUser();
+    } catch (error){
+      console.error('Error saving post: ', error);
+    }
+  }
 
   const renderContent = (html) => {
     // If content doesn't contain h1 tags, render it directly with styling
@@ -343,6 +355,16 @@ const InterviewExperienceDetail = () => {
               >
                 <FaRegComment className="text-gray-400 hover:text-purple-400 text-xl" />
                 <span className="text-gray-300">{experience.commentCount}</span>
+              </div>
+
+              <div
+                className="flex items-center justify-center gap-2 cursor-pointer bg-gray-700 rounded-lg px-4 py-2 hover:bg-gray-600 transition-all duration-300 transform hover:scale-105"
+                onClick={() => handleSave(experience._id)}
+              >
+                {currentUser.savedItems.includes(experience._id) ? 
+                  <GoBookmarkFill className="text-purple-400 text-xl transform hover:scale-120 transition-all duration-300"/> :
+                  <GoBookmark className="text-gray-400 text-xl transform hover:scale-120 transition-all duration-300"/>
+                }
               </div>
             </div>
             

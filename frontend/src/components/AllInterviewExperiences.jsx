@@ -38,7 +38,6 @@ const AllInterviewExperiences = ({
           Authorization: `Bearer ${localStorage.getItem('token')}`
         }
       })
-      console.log(res.data.user);
       setCurrentUser(res.data.user);
     } catch (error){
       console.error('Error fetching current user: ', error);

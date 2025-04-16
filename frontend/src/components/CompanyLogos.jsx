@@ -17,7 +17,7 @@ const CompanyLogos = () => {
   ];
 
   return (
-    <div className="bg-gradient-to-b from-gray-900 to-gray-800 py-5 overflow-hidden">
+    <div className="bg-gradient-to-b from-gray-900 to-gray-800 py-5  overflow-hidden">
       <div className="container mx-auto px-4">
         <h2 className="text-2xl md:text-3xl font-bold text-center text-white mb-8">
           Our <span className="text-purple-400">Recruiters</span>
