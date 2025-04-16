@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 const Sidebar = ({ onSearch, onAddExperience, onVerifyRequest }) => {
   const [user, setUser] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [recentSearches, setRecentSearches] = useState(localStorage.getItem("recentSearches") || []);
+  const [recentSearches, setRecentSearches] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -21,28 +21,32 @@ const Sidebar = ({ onSearch, onAddExperience, onVerifyRequest }) => {
     setSearchQuery(query);
   };
 
-  const handleSearchSubmit = (e) => {
+  const handleSearchSubmit = async (e) => {
     e.preventDefault();
     onSearch(searchQuery);
-    updateRecentSearches(searchQuery);
+    await updateRecentSearches(searchQuery);
   };
 
-  const updateRecentSearches = (query) => {
-    if (query.trim() === "") return;
+  const updateRecentSearches = async (query) => {
+    try{
+      if(query.trim() === "") return;
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URI}/api/v1/users/add-recent-search`, {search: query}, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      console.log(response.data);
+      setRecentSearches(response.data.searches);
+    } catch (error) {
+      console.error("Error adding recent search:", error);
+    }
     
-    setRecentSearches(prev => {
-      const withoutCurrent = prev.filter(item => item !== query);
-      const updated = [query, ...withoutCurrent];
-      const limited = updated.slice(0, 5);
-      localStorage.setItem('recentSearches', JSON.stringify(limited));
-      return limited;
-    });
   };
 
-  const handleRecentSearchClick = (query) => {
+  const handleRecentSearchClick = async (query) => {
     setSearchQuery(query); 
     onSearch(query);
-    updateRecentSearches(query);
+    await updateRecentSearches(query);
   };
 
   useEffect(() => {
@@ -55,11 +59,14 @@ const Sidebar = ({ onSearch, onAddExperience, onVerifyRequest }) => {
           },
         });
         setUser(response.data.user);
+
+        const recentSearchesResponse = await axios.get(`${import.meta.env.VITE_BACKEND_URI}/api/v1/users/get-recent-searches`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+        setRecentSearches(recentSearchesResponse.data.searches);
         
-        const savedSearches = localStorage.getItem('recentSearches');
-        if (savedSearches) {
-          setRecentSearches(JSON.parse(savedSearches));
-        }
       } catch (error) {
         console.error("Error fetching user data:", error);
       } finally {

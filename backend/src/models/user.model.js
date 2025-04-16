@@ -26,8 +26,15 @@ const userSchema = new mongoose.Schema({
         type: String
     },
     savedItems: [{
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Post'
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Post'
+    }],
+    recentSearches: [{
+        type: String,
+    }],
+    postsViewed: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Post',
     }]
 }, {timestamps: true});
 

@@ -14,12 +14,14 @@ const userRoutes = require('./routes/user.routes');
 const postRoutes = require('./routes/post.routes');
 const commentRoutes = require('./routes/comment.route');
 const notificationRoutes = require('./routes/notification.route');
+const recommendationRoutes = require('./routes/recommendation.routes');
 const verifyJWT = require('./middlewares/auth.middleware');
 
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/posts', verifyJWT, postRoutes);
 app.use('/api/v1/comments', verifyJWT, commentRoutes);
 app.use('/api/v1/notifications', verifyJWT, notificationRoutes);
+app.use('/api/v1/recommendations', verifyJWT, recommendationRoutes);
 
 connectDB()
 .then(() => {
